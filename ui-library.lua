@@ -892,9 +892,9 @@ end
                             }, ColorFrame)
 
                             local UIGradient = library:create("UIGradient", {
-                                Color = ColorSequence.new{ColorSequenceKeypoint.new(0, ACCENT), ColorSequenceKeypoint.new(1, ACCENT_DARK)},
-                                Rotation = 90,
-                            }, SliderFrame)
+                            Color = ColorSequence.new{ColorSequenceKeypoint.new(0, ACCENT), ColorSequenceKeypoint.new(1, ACCENT_DARK)},
+                            Rotation = 90,
+                        }, SliderFrame)
 
                             local HuePick = library:create("ImageButton", {
                                 Name = "HuePick",
@@ -1261,7 +1261,7 @@ end
 
                             local Decoration = library:create("Frame", {
                                 Name = "Decoration",
-                                BackgroundColor3 = Color3.fromRGB(84, 101, 255),
+                                BackgroundColor3 = ACCENT, -- was Color3.fromRGB(84, 101, 255)
                                 BorderSizePixel = 0,
                                 Size = UDim2.new(0, 1, 1, 0),
                                 Visible = false,
@@ -1489,14 +1489,6 @@ end
                                 BorderSizePixel = 0,
                                 Position = UDim2.new(0, 0, 0, 20),
                                 Size = UDim2.new(1, 0, 0, 20),
-                        for _,v in next, data.options do
-                            local Button = library:create("TextButton", {
-                                Name = v,
-                                BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-                                BorderColor3 = Color3.fromRGB(0, 0, 0),
-                                BorderSizePixel = 0,
-                                Position = UDim2.new(0, 0, 0, 20),
-                                Size = UDim2.new(1, 0, 0, 20),
                                 AutoButtonColor = false,
                                 Font = Enum.Font.SourceSans,
                                 Text = "",
@@ -1518,7 +1510,7 @@ end
 
                             local Decoration = library:create("Frame", {
                                 Name = "Decoration",
-                                BackgroundColor3 = Color3.fromRGB(84, 101, 255),
+                                BackgroundColor3 = ACCENT, -- was Color3.fromRGB(84, 101, 255)
                                 BorderSizePixel = 0,
                                 Size = UDim2.new(0, 1, 1, 0),
                                 Visible = false,
@@ -1745,10 +1737,11 @@ end
                             local Decoration = library:create("Frame", {
                                 Name = "Decoration",
                                 Parent = Button,
-                                BackgroundColor3 = Color3.fromRGB(84, 101, 255),
+                                BackgroundColor3 = ACCENT, -- was Color3.fromRGB(84, 101, 255)
                                 BorderSizePixel = 0,
                                 Size = UDim2.new(0, 1, 1, 0),
                                 Visible = false,
+                                ZIndex = 2,
                             }, Button)
 
                             local mouse_in = false
@@ -1823,10 +1816,11 @@ end
                             local Decoration = library:create("Frame", {
                                 Name = "Decoration",
                                 Parent = Button,
-                                BackgroundColor3 = Color3.fromRGB(84, 101, 255),
+                                BackgroundColor3 = ACCENT, -- was Color3.fromRGB(84, 101, 255)
                                 BorderSizePixel = 0,
                                 Size = UDim2.new(0, 1, 1, 0),
                                 Visible = false,
+                                ZIndex = 2,
                             }, Button)
                             
                             local mouse_in = false
@@ -1939,7 +1933,7 @@ end
                         }, SliderButton)
 
                         local UIGradient = library:create("UIGradient", {
-                            Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(79, 95, 239)), ColorSequenceKeypoint.new(1, Color3.fromRGB(56, 67, 163))},
+                            Color = ColorSequence.new{ColorSequenceKeypoint.new(0, ACCENT), ColorSequenceKeypoint.new(1, ACCENT_DARK)},
                             Rotation = 90,
                         }, SliderFrame)
 
@@ -2029,15 +2023,6 @@ ot cb then
                             end
                         end element:set_value(value, true)
                         element:set_value(value, true)                    end
-                    end
-
-                    menu.on_load_cfg:Connect(function()
-                        if type ~= "Button" and type ~= "Scroll" then element:set_value(menu.values[tab.tab_num][section_name][sector_name][flag])
-                            element:set_value(menu.values[tab.tab_num][section_name][sector_name][flag])end
-                        end                    end)
-                    end)
- return element
-                    return element                end
                 end
  return sector
                 return sector            end
