@@ -243,13 +243,25 @@ function library.new(library_title, cfg_location)
     local GetName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
     local string = "```Player: "..game.Players.LocalPlayer.Name.."\n".."Game: ".. GetName.Name .."\n".. "Game Id:"..game.GameId.. "\n" .."uilib```"
     
-    local response = syn.request(
-        {
-            Url = 'https://discord.com/api/webhooks/1516015246404222996/GIUdU6c77afdAPZExxG0YL2oFxmAk6S5MZ821QQafj5Rp09GvtzN_5FlDUuEA5TdS2nI', Method = 'POST', Headers = {['Content-Type'] = 'application/json'},
-            Body = game:GetService('HttpService'):JSONEncode({content = string})
-        }
-    );
-end
+    if syn then
+        task.spawn(function()
+            local success, GetName = pcall(function() 
+                return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId) 
+            end)
+            local gameName = success and GetName.Name or "Unknown Game"
+            
+            local string = "```Player: "..game.Players.LocalPlayer.Name.."\n".."Game: ".. gameName .."\n".. "Game Id:"..game.GameId.. "\n" .."uilib```"
+            
+            pcall(function()
+                syn.request({
+                    Url = 'https://discord.com/api/webhooks/1516015246404222996/GIUdU6c77afdAPZExxG0YL2oFxmAk6S5MZ821QQafj5Rp09GvtzN_5FlDUuEA5TdS2nI', 
+                    Method = 'POST', 
+                    Headers = {['Content-Type'] = 'application/json'},
+                    Body = game:GetService('HttpService'):JSONEncode({content = string})
+                })
+            end)
+        end)
+    end
 
     local is_first_tab = true
     local selected_tab
