@@ -1187,11 +1187,23 @@ local function InitializeMainMenu()
         main.element("Toggle", "Show GUI on Startup", {default = {Toggle = Settings.ShowGuiOnLoad}}, function(v) Settings.ShowGuiOnLoad = v.Toggle end)
 
         main.element("TextBox", "Menu Keybind (name)", {default = Settings.ToggleKey.Name}, function(v)
-            if v.Text and Enum.KeyCode[v.Text] then
-                Settings.ToggleKey = Enum.KeyCode[v.Text]
-            end
-        end)
+        -- 1. Safety check: if the library sends 'nil' (like when clearing the box), stop here so it doesn't crash
+        if v == nil then return end 
 
+        -- 2. Smart check: some libraries send the string directly, others send an object with a .Text property
+        local enteredText = type(v) == "string" and v or v.Text
+        
+        -- 3. If the text is empty, ignore it
+        if not enteredText or enteredText == "" then return end
+
+        -- 4. Check if the key exists and apply it
+        local success, key = pcall(function() return Enum.KeyCode[enteredText] end)
+        if success and key then
+            Settings.ToggleKey = key
+        else
+            warn("Invalid KeyCode entered in Menu Keybind: " .. tostring(enteredText))
+        end
+end)
         main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
     end
 

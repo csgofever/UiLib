@@ -176,13 +176,13 @@ function library.new(library_title, cfg_location)
     end
 
     -- Smooth toggle sequence that hides default windows cursor when open, brings it back when closed
-    uis.InputBegan:Connect(function(key)
-        if key.KeyCode ~= Enum.KeyCode.Insert then return end
+    --uis.InputBegan:Connect(function(key)
+        --if key.KeyCode ~= Enum.KeyCode.Insert then return end
 
-		ScreenGui.Enabled = not ScreenGui.Enabled
-        menu.open = ScreenGui.Enabled
-        game:GetService("UserInputService").MouseIconEnabled = not ScreenGui.Enabled
-	end)
+		--ScreenGui.Enabled = not ScreenGui.Enabled
+        --menu.open = ScreenGui.Enabled
+        --game:GetService("UserInputService").MouseIconEnabled = not ScreenGui.Enabled
+	--end)
 
     local ImageLabel = library:create("ImageButton", {
         Name = "Main",
