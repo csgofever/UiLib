@@ -133,6 +133,8 @@ function library.new(library_title, cfg_location)
     end
 
     menu.open = true
+    game:GetService("UserInputService").MouseIconEnabled = false -- Hides the default cursor on execution when open
+    
     local ScreenGui = library:create("ScreenGui", {
         ResetOnSpawn = false,
         ZIndexBehavior = Enum.ZIndexBehavior.Global,
@@ -152,8 +154,10 @@ function library.new(library_title, cfg_location)
         ZIndex = 6969,
     }, ScreenGui)
 
+    -- Uses full window coordinates to perfectly align custom and windows cursors
     rs.RenderStepped:Connect(function()
-        Cursor.Position = UDim2.new(0, mouse.X, 0, mouse.Y + 36)
+        local mousePos = uis:GetMouseLocation()
+        Cursor.Position = UDim2.new(0, mousePos.X, 0, mousePos.Y)
     end)
 
 	ScreenGui.Parent = game:GetService("CoreGui")
@@ -162,19 +166,17 @@ function library.new(library_title, cfg_location)
         return menu.open
     end
     function menu.SetOpen(State)
-        ScreenGui.Enabled = state
+        ScreenGui.Enabled = State
+        game:GetService("UserInputService").MouseIconEnabled = not State
     end
 
+    -- Smooth toggle sequence that hides default windows cursor when open, brings it back when closed
     uis.InputBegan:Connect(function(key)
         if key.KeyCode ~= Enum.KeyCode.Insert then return end
 
 		ScreenGui.Enabled = not ScreenGui.Enabled
         menu.open = ScreenGui.Enabled
-
-        while ScreenGui.Enabled do
-            uis.MouseIconEnabled = true
-            rs.RenderStepped:Wait()
-        end
+        game:GetService("UserInputService").MouseIconEnabled = not ScreenGui.Enabled
 	end)
 
     local ImageLabel = library:create("ImageButton", {
