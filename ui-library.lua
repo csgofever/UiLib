@@ -188,7 +188,7 @@ function library.new(library_title, cfg_location)
         Name = "Main",
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BorderColor3 = Color3.fromRGB(0, 0, 0), -- Reverted to black for the authentic aesthetic
+        BorderColor3 = Color3.fromRGB(147, 51, 234),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 700, 0, 500),
         Image = "http://www.roblox.com/asset/?id=99289006094669",
@@ -401,8 +401,10 @@ function library.new(library_title, cfg_location)
                 Size = UDim2.new(0, string.len(section_name) * 8.5 + 10, 0, 2),
                 Visible = true,
             }, SectionButton)
-            
-            -- We completely removed the UIGradient here so it looks like a clean, authentic Cripware line
+
+            local UIGradient = library:create("UIGradient", {
+                Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(32, 33, 38)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(147, 51, 234)), ColorSequenceKeypoint.new(1, Color3.fromRGB(32, 33, 38))},
+            }, SectionDecoration)
 
             local SectionFrame = library:create("Frame", {
                 Name = "SectionFrame",
