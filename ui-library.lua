@@ -399,6 +399,12 @@ end
                 ScrollBarThickness = 0,
             }, SectionFrame)
 
+            -- This fixes the top cutoff and gives dropdowns extra space at the bottom
+            local LeftPadding = library:create("UIPadding", {
+                PaddingTop = UDim.new(0, 4),
+                PaddingBottom = UDim.new(0, 100), 
+            }, Left)
+
             local UIListLayout = library:create("UIListLayout", {
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 SortOrder = Enum.SortOrder.LayoutOrder,
@@ -415,7 +421,13 @@ end
                 ScrollBarThickness = 0,
             }, SectionFrame)
 
-            local UIListLayout = library:create("UIListLayout", {
+            -- Applied to the right side as well
+            local RightPadding = library:create("UIPadding", {
+                PaddingTop = UDim.new(0, 4),
+                PaddingBottom = UDim.new(0, 100),
+            }, Right)
+
+            local UIListLayout2 = library:create("UIListLayout", {
                 HorizontalAlignment = Enum.HorizontalAlignment.Center,
                 SortOrder = Enum.SortOrder.LayoutOrder,
                 Padding = UDim.new(0, 12),
