@@ -158,6 +158,11 @@ function library.new(library_title, cfg_location)
     rs.RenderStepped:Connect(function()
         local mousePos = uis:GetMouseLocation()
         Cursor.Position = UDim2.new(0, mousePos.X, 0, mousePos.Y)
+        
+        -- Force hide the default cursor actively while the GUI is open
+        if ScreenGui.Enabled then
+            uis.MouseIconEnabled = false
+        end
     end)
 
 	ScreenGui.Parent = game:GetService("CoreGui")
@@ -186,10 +191,10 @@ function library.new(library_title, cfg_location)
         BorderColor3 = Color3.fromRGB(147, 51, 234),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 700, 0, 500),
-        Image = "http://www.roblox.com/asset/?id=7300333488",
+        -- Image property removed to kill the baked-in blue top bar
         AutoButtonColor = false,
         Modal = true,
-    }, ScreenGui)
+    }, ScreenGui)   
 
     function menu.GetPosition()
         return ImageLabel.Position
@@ -850,7 +855,11 @@ end
 
                             local extra_flag = "$"..flag
 
-                            local extra_value = {Color}
+                            -- Change this:
+                            -- local extra_value = {Color}
+
+                            -- To this:
+                            local extra_value = {Color = color_default and color_default.Color or Color3.fromRGB(255, 255, 255), Transparency = 0}
                             color_callback = color_callback or function() end
 
                             local ColorButton = library:create("TextButton", {
@@ -1006,6 +1015,7 @@ end
                                     local moveconnection = mouse.Move:Connect(function()
                                         color.update_transp()
                                     end)
+                                    local releaseconnection -- Define locally first
                                     releaseconnection = uis.InputEnded:Connect(function(Mouse)
                                         if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
                                             color.update_transp()
@@ -1016,9 +1026,10 @@ end
                                 end)
                             end
 
-                            color.h = (math.clamp(HuePick.AbsolutePosition.Y-HuePicker.AbsolutePosition.Y, 0, HuePicker.AbsoluteSize.Y)/HuePicker.AbsoluteSize.Y)
-                            color.s = 1-(math.clamp(ColorPick.AbsolutePosition.X-ColorPick.AbsolutePosition.X, 0, ColorPick.AbsoluteSize.X)/ColorPick.AbsoluteSize.X)
-                            color.v = 1-(math.clamp(ColorPick.AbsolutePosition.Y-ColorPick.AbsolutePosition.Y, 0, ColorPick.AbsoluteSize.Y)/ColorPick.AbsoluteSize.Y)
+                            -- Change the broken HSV math lines (around line 621) to properly reference the Picker frames:
+                            color.h = (math.clamp(HuePick.AbsolutePosition.Y - HuePicker.AbsolutePosition.Y, 0, HuePicker.AbsoluteSize.Y) / math.max(1, HuePicker.AbsoluteSize.Y))
+                            color.s = 1 - (math.clamp(ColorPick.AbsolutePosition.X - ColorPicker.AbsolutePosition.X, 0, ColorPicker.AbsoluteSize.X) / math.max(1, ColorPicker.AbsoluteSize.X))
+                            color.v = 1 - (math.clamp(ColorPick.AbsolutePosition.Y - ColorPicker.AbsolutePosition.Y, 0, ColorPicker.AbsoluteSize.Y) / math.max(1, ColorPicker.AbsoluteSize.Y))
 
                             extra_value.Color = Color3.fromHSV(color.h, color.s, color.v)
                             menu.values[tab.tab_num][section_name][sector_name][extra_flag] = extra_value
@@ -1041,6 +1052,7 @@ end
                                 local moveconnection = mouse.Move:Connect(function()
                                     color.update_color()
                                 end)
+                                local releaseconnection -- Define locally first
                                 releaseconnection = uis.InputEnded:Connect(function(Mouse)
                                     if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
                                         color.update_color()
@@ -1069,6 +1081,7 @@ end
                                 local moveconnection = mouse.Move:Connect(function()
                                     color.update_hue()
                                 end)
+                                local releaseconnection -- Define locally first
                                 releaseconnection = uis.InputEnded:Connect(function(Mouse)
                                     if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then
                                         color.update_hue()

@@ -1121,7 +1121,10 @@ local function InitializeMainMenu()
             updateCrosshairVisuals()
         end)
 
-        local shapeElem = L("Dropdown", "Crosshair Shape", {options = {"Square","Circle","Classic","X","Triangle","Arrow","Horizontal Line"}})
+        local shapeElem = L("Dropdown", "Crosshair Shape", {options = {"Square","Circle","Classic","X","Triangle","Arrow","Horizontal Line"}}, function(v)
+            FeatureStates.CrosshairShape = v.Dropdown
+            updateCrosshairVisuals()
+        end)
         shapeElem:set_value({Dropdown = FeatureStates.CrosshairShape}, true)
 
         L("Slider", "Crosshair Size", {default = {min=1,max=30,default=FeatureStates.CrosshairSize}}, function(v) FeatureStates.CrosshairSize = v.Slider updateCrosshairVisuals() end)
@@ -1210,16 +1213,15 @@ local function InitializeMainMenu()
     end
     local mainToggleTarget = findMainFrame()
 
+    -- We no longer need the anchorGui hack. We directly call the library's toggle function.
     UserInputService.InputBegan:Connect(function(input, processed)
         if not processed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Settings.ToggleKey then
-            if mainToggleTarget:IsA("ScreenGui") then
-                mainToggleTarget.Enabled = not mainToggleTarget.Enabled
-            else
-                mainToggleTarget.Visible = not mainToggleTarget.Visible
+            if menu.SetOpen and menu.IsOpen then
+                menu.SetOpen(not menu.IsOpen())
             end
         end
     end)
-
+    
     updateCrosshairVisuals()
 end
 
