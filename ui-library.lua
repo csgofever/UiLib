@@ -377,16 +377,17 @@ end
             end)
 
             -- Calculates the exact pixel width of the section name
-            local text_width = library:get_text_size(section_name, 15, Enum.Font.Ubuntu, Vector2.new(500, 20)).X
+            -- 1. Use string math instead of TextService to completely stop the 30-second executor freeze
+            local text_width = string.len(section_name) * 8.5 
             
             local SectionDecoration = library:create("Frame", {
                 Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Solid Jugg Purple (no messy gradient)
+                BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Solid Jugg Purple
                 BorderSizePixel = 0,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, 27),
-                Size = UDim2.new(0, text_width + 12, 0, 2), -- Snaps exactly to the text width + small padding
-                Visible = false,
+                Size = UDim2.new(0, text_width + 10, 0, 2), -- Snaps cleanly under the text
+                Visible = true, -- 2. Set back to true so you actually see the Cripware line!
             }, SectionButton)
             
             -- We completely removed the UIGradient here so it looks like a clean, authentic Cripware line
