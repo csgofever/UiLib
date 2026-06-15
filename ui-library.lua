@@ -1964,7 +1964,7 @@ end
                         }, SliderButton)
 
                         local UIGradient = library:create("UIGradient", {
-                            Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(79, 95, 239)), ColorSequenceKeypoint.new(1, Color3.fromRGB(56, 67, 163))},
+                            Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(147, 51, 234)), ColorSequenceKeypoint.new(1, Color3.fromRGB(112, 40, 176))},
                             Rotation = 90,
                         }, SliderFrame)
 
