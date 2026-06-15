@@ -1681,6 +1681,9 @@ end
                         uis.TextBoxFocused:connect(function()
                             if uis:GetFocusedTextBox() == TextBox then
                                 library:tween(TextBox, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BorderColor3 = Color3.fromRGB(147, 51, 234)})
+                                
+                                -- This changes the text to ... when you click it
+                                TextBox.Text = "..."
                             end
                         end)
                         uis.TextBoxFocusReleased:connect(function()

@@ -105,7 +105,7 @@ local function saveSettings()
             UIColor = {Settings.UIColor.R, Settings.UIColor.G, Settings.UIColor.B},
             UITransparency = Settings.UITransparency,
             AnimationSpeed = Settings.AnimationSpeed,
-            ToggleKey = Settings.ToggleKey.Name,
+            ToggleKey = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift",
             AutoExecute = Settings.AutoExecute,
             ShowWatermark = Settings.ShowWatermark,
             ShowGuiOnLoad = Settings.ShowGuiOnLoad,
@@ -130,7 +130,9 @@ local function loadSettings()
                     if data.Settings.UIColor then Settings.UIColor = Color3.new(data.Settings.UIColor[1], data.Settings.UIColor[2], data.Settings.UIColor[3]) end
                     if data.Settings.UITransparency ~= nil then Settings.UITransparency = data.Settings.UITransparency end
                     if data.Settings.AnimationSpeed ~= nil then Settings.AnimationSpeed = data.Settings.AnimationSpeed end
-                    if data.Settings.ToggleKey then Settings.ToggleKey = Enum.KeyCode[data.Settings.ToggleKey] end
+                    if data.Settings.ToggleKey then 
+                        pcall(function() Settings.ToggleKey = Enum.KeyCode[data.Settings.ToggleKey] end) 
+                    end
                     if data.Settings.AutoExecute ~= nil then Settings.AutoExecute = data.Settings.AutoExecute end
                     if data.Settings.ShowWatermark ~= nil then Settings.ShowWatermark = data.Settings.ShowWatermark end
                     if data.Settings.ShowGuiOnLoad ~= nil then Settings.ShowGuiOnLoad = data.Settings.ShowGuiOnLoad end
@@ -1186,24 +1188,20 @@ local function InitializeMainMenu()
         main.element("Toggle", "Show Intro Watermark", {default = {Toggle = Settings.ShowWatermark}}, function(v) Settings.ShowWatermark = v.Toggle end)
         main.element("Toggle", "Show GUI on Startup", {default = {Toggle = Settings.ShowGuiOnLoad}}, function(v) Settings.ShowGuiOnLoad = v.Toggle end)
 
-        main.element("TextBox", "Menu Keybind (name)", {default = Settings.ToggleKey.Name}, function(v)
-        -- 1. Safety check: if the library sends 'nil' (like when clearing the box), stop here so it doesn't crash
+        main.element("TextBox", "Menu Keybind (name)", {default = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift"}, function(v)
         if v == nil then return end 
-
-        -- 2. Smart check: some libraries send the string directly, others send an object with a .Text property
         local enteredText = type(v) == "string" and v or v.Text
         
-        -- 3. If the text is empty, ignore it
-        if not enteredText or enteredText == "" then return end
+        -- Ignore empty boxes or the new "..." indicator
+        if not enteredText or enteredText == "" or enteredText == "..." then return end
 
-        -- 4. Check if the key exists and apply it
         local success, key = pcall(function() return Enum.KeyCode[enteredText] end)
         if success and key then
             Settings.ToggleKey = key
         else
             warn("Invalid KeyCode entered in Menu Keybind: " .. tostring(enteredText))
         end
-end)
+    end)
         main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
     end
 
