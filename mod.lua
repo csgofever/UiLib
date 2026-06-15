@@ -373,7 +373,6 @@ local function parseColor(str)
     return Settings.UIColor or Color3.fromRGB(147, 51, 234)
 end
 
--- ...existing code...
 local function updateCrosshairVisuals()
     local shape = FeatureStates.CrosshairShape or "Square"
     if gapSliderRow then
@@ -665,7 +664,6 @@ local function updateCrosshairVisuals()
         end
     end
 end
--- ...existing code...
 
 -- UPDATED: Robust Crosshair Hide Logic (persistent across respawns)
 local hideCrosshairConnection = nil
@@ -722,7 +720,6 @@ local function toggleHideGameCrosshair(enabled)
     end
 end
 
--- ...existing code...
 local function toggleCrosshair(enabled)
     FeatureStates.Crosshair = enabled
     if enabled then
@@ -803,7 +800,6 @@ local function toggleCrosshair(enabled)
         if crosshairGui then crosshairGui:Destroy() end
     end
 end
--- ...existing code...
 
 -- Other Feature Modules
 local VOID_POS = Vector3.new(0, -500, 0)
@@ -1046,740 +1042,192 @@ end
 -- MAIN MENU GENERATION
 --------------------------------------------------
 local function InitializeMainMenu()
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "JuggProfileGui"
-    ScreenGui.ResetOnSpawn = false
-    ScreenGui.DisplayOrder = 2136372536
-    ScreenGui.Parent = targetGui
-
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 500, 0, 320)
-    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -160)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(9, 9, 11)
-    MainFrame.BackgroundTransparency = Settings.UITransparency
-    MainFrame.BorderSizePixel = 0
-    MainFrame.Visible = Settings.ShowGuiOnLoad
-    MainFrame.Parent = ScreenGui
-    addCorner(MainFrame, 8)
-    addSafeBorder(MainFrame, Color3.fromRGB(28, 28, 35))
-
-    local Sidebar = Instance.new("Frame")
-    Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 130, 1, 0)
-    Sidebar.BackgroundColor3 = Color3.fromRGB(7, 7, 9)
-    Sidebar.BorderSizePixel = 0
-    Sidebar.Parent = MainFrame
-    addCorner(Sidebar, 8)
-
-    local SidebarDivider = Instance.new("Frame")
-    SidebarDivider.Size = UDim2.new(0, 1, 1, 0)
-    SidebarDivider.Position = UDim2.new(1, -1, 0, 0)
-    SidebarDivider.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-    SidebarDivider.BorderSizePixel = 0
-    SidebarDivider.Parent = Sidebar
-
-    local DragHandle = Instance.new("Frame")
-    DragHandle.Name = "DragHandle"
-    DragHandle.Size = UDim2.new(1, 0, 0, 45)
-    DragHandle.BackgroundTransparency = 1
-    DragHandle.Parent = Sidebar
-
-    local LogoLabel = Instance.new("TextLabel")
-    LogoLabel.Size = UDim2.new(1, 0, 1, 0)
-    LogoLabel.Position = UDim2.new(0, 14, 0, 0)
-    LogoLabel.BackgroundTransparency = 1
-    LogoLabel.Text = "jugg.lua"
-    LogoLabel.TextColor3 = Settings.UIColor
-    LogoLabel.Font = Enum.Font.GothamBold
-    LogoLabel.TextSize = 14
-    LogoLabel.TextXAlignment = Enum.TextXAlignment.Left
-    LogoLabel.Parent = DragHandle
-
-    makeDraggable(MainFrame, MainFrame)
-    makeDraggable(MainFrame, DragHandle)
-
-    local NavigationList = Instance.new("Frame")
-    NavigationList.Size = UDim2.new(1, -16, 1, -60)
-    NavigationList.Position = UDim2.new(0, 8, 0, 50)
-    NavigationList.BackgroundTransparency = 1
-    NavigationList.Parent = Sidebar
-
-    local NavLayout = Instance.new("UIListLayout")
-    NavLayout.Padding = UDim.new(0, 5)
-    NavLayout.Parent = NavigationList
-
-    local ContentArea = Instance.new("Frame")
-    ContentArea.Name = "ContentArea"
-    ContentArea.Size = UDim2.new(1, -145, 1, -20)
-    ContentArea.Position = UDim2.new(0, 140, 0, 10)
-    ContentArea.BackgroundTransparency = 1
-    ContentArea.Parent = MainFrame
-
-    updateUIToggleVisual = function(configKey, isSettingTable)
-        local component = RegisteredUIComponents[configKey]
-        if not component then return end
-        
-        local isActive = isSettingTable and Settings[configKey] or FeatureStates[configKey]
-        local pin = component:FindFirstChild("Pin", true)
-        local track = component:FindFirstChild("Track", true)
-        
-        if pin and track then
-            if isActive then
-                createTween(pin, {Position = UDim2.new(1, -15, 0.5, -5)}, 0.12)
-                createTween(track, {BackgroundColor3 = Settings.UIColor}, 0.12)
-            else
-                createTween(pin, {Position = UDim2.new(0, 3, 0.5, -5)}, 0.12)
-                createTween(track, {BackgroundColor3 = Color3.fromRGB(34, 34, 38)}, 0.12)
-            end
-        end
+    -- ensure single GUI instance
+    if targetGui:FindFirstChild("JuggProfileGui") then
+        targetGui.JuggProfileGui:Destroy()
     end
 
-    local tabs = {}
-    local function createTab(name)
-        local TabButton = Instance.new("TextButton")
-        TabButton.Size = UDim2.new(1, 0, 0, 32)
-        TabButton.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
-        TabButton.BackgroundTransparency = 1
-        TabButton.Text = name
-        TabButton.TextColor3 = Color3.fromRGB(130, 130, 135)
-        TabButton.Font = Enum.Font.GothamMedium
-        TabButton.TextSize = 12
-        TabButton.TextXAlignment = Enum.TextXAlignment.Left
-        TabButton.Parent = NavigationList
-        addCorner(TabButton, 5)
-        
-        local Pad = Instance.new("UIPadding")
-        Pad.PaddingLeft = UDim.new(0, 12)
-        Pad.Parent = TabButton
-
-        local TabPage = Instance.new("ScrollingFrame")
-        TabPage.Size = UDim2.new(1, 0, 1, 0)
-        TabPage.BackgroundTransparency = 1
-        TabPage.Visible = false
-        TabPage.ScrollBarThickness = 0
-        TabPage.AutomaticCanvasSize = Enum.AutomaticSize.Y
-        TabPage.Parent = ContentArea
-        
-        local PageLayout = Instance.new("UIListLayout")
-        PageLayout.Padding = UDim.new(0, 6)
-        PageLayout.Parent = TabPage
-        
-        TabButton.MouseButton1Click:Connect(function()
-            for _, t in pairs(tabs) do
-                t.Page.Visible = false
-                createTween(t.Btn, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(130, 130, 135)}, 0.12)
-            end
-            TabPage.Visible = true
-            createTween(TabButton, {BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255)}, 0.12)
-        end)
-        
-        tabs[name] = {Btn = TabButton, Page = TabPage}
-        return TabPage
-    end
-
-    local function createToggleRow(parent, label, configKey, isSettingTable, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.BorderSizePixel = 0
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -60, 1, 0)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-        
-        local ClickZone = Instance.new("TextButton")
-        ClickZone.Size = UDim2.new(0, 32, 0, 16)
-        ClickZone.Position = UDim2.new(1, -44, 0.5, -8)
-        ClickZone.BackgroundTransparency = 1
-        ClickZone.Text = ""
-        ClickZone.Parent = Row
-        
-        local Track = Instance.new("Frame")
-        Track.Name = "Track"
-        Track.Size = UDim2.new(1, 0, 1, 0)
-        Track.BackgroundColor3 = Color3.fromRGB(34, 34, 38)
-        Track.BorderSizePixel = 0
-        Track.Parent = ClickZone
-        addCorner(Track, 8)
-        
-        local Pin = Instance.new("Frame")
-        Pin.Name = "Pin"
-        Pin.Size = UDim2.new(0, 10, 0, 10)
-        Pin.Position = UDim2.new(0, 3, 0.5, -5)
-        Pin.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Pin.BorderSizePixel = 0
-        Pin.Parent = ClickZone
-        addCorner(Pin, 5)
-        
-        RegisteredUIComponents[configKey] = Row
-        
-        ClickZone.MouseButton1Click:Connect(function()
-            local cur = isSettingTable and Settings[configKey] or FeatureStates[configKey]
-            local newVal = not cur
-            if isSettingTable then Settings[configKey] = newVal else FeatureStates[configKey] = newVal end
-            updateUIToggleVisual(configKey, isSettingTable)
-            callback(newVal)
-        end)
-    end
-
-    local function createSliderRow(parent, label, configKey, min, max, default, suffix, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 50)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.BorderSizePixel = 0
-        Row.Parent = parent
-        
-        local corner1 = Instance.new("UICorner")
-        corner1.CornerRadius = UDim.new(0, 5)
-        corner1.Parent = Row
-        
-        local stroke1 = Instance.new("UIStroke")
-        stroke1.Color = Color3.fromRGB(22, 22, 26)
-        stroke1.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        stroke1.Parent = Row
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -60, 0, 25)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-
-        local ValueLabel = Instance.new("TextLabel")
-        ValueLabel.Size = UDim2.new(0, 50, 0, 25)
-        ValueLabel.Position = UDim2.new(1, -62, 0, 0)
-        ValueLabel.BackgroundTransparency = 1
-        ValueLabel.Text = tostring(default) .. (suffix or "")
-        ValueLabel.TextColor3 = Settings.UIColor
-        ValueLabel.Font = Enum.Font.GothamBold
-        ValueLabel.TextSize = 11
-        ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-        ValueLabel.Parent = Row
-
-        local SliderBg = Instance.new("TextButton")
-        SliderBg.Size = UDim2.new(1, -24, 0, 4)
-        SliderBg.Position = UDim2.new(0, 12, 0, 32)
-        SliderBg.BackgroundColor3 = Color3.fromRGB(34, 34, 38)
-        SliderBg.Text = ""
-        SliderBg.AutoButtonColor = false
-        SliderBg.Parent = Row
-        
-        local corner2 = Instance.new("UICorner")
-        corner2.CornerRadius = UDim.new(0, 4)
-        corner2.Parent = SliderBg
-
-        local SliderFill = Instance.new("Frame")
-        SliderFill.Size = UDim2.new(math.clamp((default - min) / (max - min), 0, 1), 0, 1, 0)
-        SliderFill.BackgroundColor3 = Settings.UIColor
-        SliderFill.Parent = SliderBg
-        
-        local corner3 = Instance.new("UICorner")
-        corner3.CornerRadius = UDim.new(0, 4)
-        corner3.Parent = SliderFill
-
-        local dragging = false
-        local function update(input)
-            local pos = math.clamp((input.Position.X - SliderBg.AbsolutePosition.X) / SliderBg.AbsoluteSize.X, 0, 1)
-            SliderFill.Size = UDim2.new(pos, 0, 1, 0)
-            local val = math.floor(min + ((max - min) * pos))
-            FeatureStates[configKey] = val
-            ValueLabel.Text = tostring(val) .. (suffix or "")
-            if callback then callback(val) end
-        end
-
-        SliderBg.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then 
-                dragging = true 
-                update(input) 
-            end
-        end)
-        UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
-        end)
-        UserInputService.InputChanged:Connect(function(input)
-            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then update(input) end
-        end)
-        return Row
-    end
-
-    local function createCycleRow(parent, label, configKey, options, default, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -110, 1, 0)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-
-        local ActionBtn = Instance.new("TextButton")
-        ActionBtn.Size = UDim2.new(0, 90, 0, 24)
-        ActionBtn.Position = UDim2.new(1, -102, 0.5, -12)
-        ActionBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-        ActionBtn.Text = default
-        ActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        ActionBtn.Font = Enum.Font.GothamBold
-        ActionBtn.TextSize = 10
-        ActionBtn.Parent = Row
-        addCorner(ActionBtn, 4)
-        addSafeBorder(ActionBtn, Settings.UIColor)
-
-        local currentIndex = table.find(options, default) or 1
-        ActionBtn.MouseButton1Click:Connect(function()
-            currentIndex = (currentIndex % #options) + 1
-            ActionBtn.Text = options[currentIndex]
-            FeatureStates[configKey] = options[currentIndex]
-            callback(options[currentIndex])
-        end)
-    end
-
-    local function createInputRow(parent, label, configKey, default, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -130, 1, 0)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-
-        local TextBox = Instance.new("TextBox")
-        TextBox.Size = UDim2.new(0, 110, 0, 24)
-        TextBox.Position = UDim2.new(1, -122, 0.5, -12)
-        TextBox.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-        TextBox.Text = default
-        TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-        TextBox.Font = Enum.Font.Gotham
-        TextBox.TextSize = 11
-        TextBox.ClearTextOnFocus = false
-        TextBox.Parent = Row
-        addCorner(TextBox, 4)
-        addSafeBorder(TextBox, Color3.fromRGB(35, 35, 45))
-
-        TextBox.FocusLost:Connect(function()
-            local text = TextBox.Text
-            FeatureStates[configKey] = text
-            if callback then callback(text) end
-        end)
-    end
-
-    local function createColorPickerRow(parent, label, configKey, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.ClipsDescendants = true
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -60, 0, 40)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-
-        local ColorPreviewBtn = Instance.new("TextButton")
-        ColorPreviewBtn.Size = UDim2.new(0, 20, 0, 20)
-        ColorPreviewBtn.Position = UDim2.new(1, -32, 0, 10)
-        ColorPreviewBtn.Text = ""
-        ColorPreviewBtn.Parent = Row
-        addCorner(ColorPreviewBtn, 4)
-        addSafeBorder(ColorPreviewBtn, Color3.fromRGB(45, 45, 55))
-
-        local ExpandedPanel = Instance.new("Frame")
-        ExpandedPanel.Size = UDim2.new(1, 0, 0, 125)
-        ExpandedPanel.Position = UDim2.new(0, 0, 0, 40)
-        ExpandedPanel.BackgroundTransparency = 1
-        ExpandedPanel.BorderSizePixel = 0
-        ExpandedPanel.ClipsDescendants = true
-        ExpandedPanel.Parent = Row
-
-        local PreviewBox = Instance.new("Frame", ExpandedPanel)
-        PreviewBox.Size = UDim2.new(0, 40, 0, 100)
-        PreviewBox.Position = UDim2.new(0, 12, 0, 10)
-        PreviewBox.BorderSizePixel = 0
-        addCorner(PreviewBox, 4)
-        addSafeBorder(PreviewBox, Color3.fromRGB(35, 35, 45))
-
-        local SVFrame = Instance.new("TextButton", ExpandedPanel)
-        SVFrame.Size = UDim2.new(1, -210, 0, 100)
-        SVFrame.Position = UDim2.new(0, 64, 0, 10)
-        SVFrame.BorderSizePixel = 0
-        SVFrame.Text = ""
-        SVFrame.AutoButtonColor = false
-        addCorner(SVFrame, 4)
-
-        local WhiteGradientFrame = Instance.new("Frame", SVFrame)
-        WhiteGradientFrame.Size = UDim2.new(1, 0, 1, 0)
-        WhiteGradientFrame.BackgroundTransparency = 0
-        WhiteGradientFrame.BorderSizePixel = 0
-        addCorner(WhiteGradientFrame, 4)
-        local wg = Instance.new("UIGradient", WhiteGradientFrame)
-        wg.Color = ColorSequence.new(Color3.new(1, 1, 1))
-        wg.Transparency = NumberSequence.new(0, 1)
-
-        local BlackGradientFrame = Instance.new("Frame", SVFrame)
-        BlackGradientFrame.Size = UDim2.new(1, 0, 1, 0)
-        BlackGradientFrame.BackgroundTransparency = 0
-        BlackGradientFrame.BorderSizePixel = 0
-        addCorner(BlackGradientFrame, 4)
-        local bg = Instance.new("UIGradient", BlackGradientFrame)
-        bg.Color = ColorSequence.new(Color3.new(0, 0, 0))
-        bg.Transparency = NumberSequence.new(1, 0)
-        bg.Rotation = 90
-
-        local SVCursor = Instance.new("Frame", SVFrame)
-        SVCursor.Size = UDim2.new(0, 8, 0, 8)
-        SVCursor.BackgroundTransparency = 1
-        SVCursor.AnchorPoint = Vector2.new(0.5, 0.5)
-        local svStroke = Instance.new("UIStroke", SVCursor)
-        svStroke.Color = Color3.new(1, 1, 1)
-        svStroke.Thickness = 1.5
-        addCorner(SVCursor, 4)
-
-        local HueSlider = Instance.new("TextButton", ExpandedPanel)
-        HueSlider.Size = UDim2.new(0, 12, 0, 100)
-        HueSlider.Position = UDim2.new(1, -132, 0, 10)
-        HueSlider.BorderSizePixel = 0
-        HueSlider.Text = ""
-        HueSlider.AutoButtonColor = false
-        addCorner(HueSlider, 4)
-
-        local hg = Instance.new("UIGradient", HueSlider)
-        hg.Rotation = 90
-        hg.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-            ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
-            ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)),
-            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
-            ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)),
-            ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
-        })
-
-        local HueCursor = Instance.new("Frame", HueSlider)
-        HueCursor.Size = UDim2.new(1, 4, 0, 4)
-        HueCursor.AnchorPoint = Vector2.new(0.5, 0.5)
-        HueCursor.BackgroundColor3 = Color3.new(1, 1, 1)
-        addCorner(HueCursor, 2)
-        addSafeBorder(HueCursor, Color3.new(0, 0, 0))
-
-        local ColorCodeLabel = Instance.new("TextLabel", ExpandedPanel)
-        ColorCodeLabel.Size = UDim2.new(0, 100, 0, 20)
-        ColorCodeLabel.Position = UDim2.new(1, -112, 0, 90)
-        ColorCodeLabel.BackgroundTransparency = 1
-        ColorCodeLabel.TextColor3 = Color3.fromRGB(180, 180, 185)
-        ColorCodeLabel.Font = Enum.Font.GothamMedium
-        ColorCodeLabel.TextSize = 10
-        ColorCodeLabel.TextXAlignment = Enum.TextXAlignment.Center
-
-        local isExpanded = false
-        ColorPreviewBtn.MouseButton1Click:Connect(function()
-            isExpanded = not isExpanded
-            createTween(Row, {Size = isExpanded and UDim2.new(1, -5, 0, 165) or UDim2.new(1, -5, 0, 40)}, 0.15)
-        end)
-
-        -- Initialize currentColor
-        local currentColor = parseColor(FeatureStates[configKey])
-        local h, s, v = Color3.toHSV(currentColor)
-
-        local function updateDisplay()
-            local selectedColor = Color3.fromHSV(h, s, v)
-            PreviewBox.BackgroundColor3 = selectedColor
-            ColorPreviewBtn.BackgroundColor3 = selectedColor
-            ColorCodeLabel.Text = "#" .. selectedColor:ToHex():upper()
-            SVFrame.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-            SVCursor.Position = UDim2.new(s, 0, 1 - v, 0)
-            HueCursor.Position = UDim2.new(0.5, 0, h, 0)
-        end
-        updateDisplay()
-
-        local isDraggingSV = false
-        local function updateSV(input)
-            local relativeX = math.clamp((input.Position.X - SVFrame.AbsolutePosition.X) / SVFrame.AbsoluteSize.X, 0, 1)
-            local relativeY = math.clamp((input.Position.Y - SVFrame.AbsolutePosition.Y) / SVFrame.AbsoluteSize.Y, 0, 1)
-            s = relativeX
-            v = 1 - relativeY
-            updateDisplay()
-            local selectedColor = Color3.fromHSV(h, s, v)
-            FeatureStates[configKey] = "#" .. selectedColor:ToHex():upper()
-            if callback then callback(FeatureStates[configKey]) end
-        end
-
-        local isDraggingHue = false
-        local function updateHue(input)
-            local relativeY = math.clamp((input.Position.Y - HueSlider.AbsolutePosition.Y) / HueSlider.AbsoluteSize.Y, 0, 1)
-            h = relativeY
-            updateDisplay()
-            local selectedColor = Color3.fromHSV(h, s, v)
-            FeatureStates[configKey] = "#" .. selectedColor:ToHex():upper()
-            if callback then callback(FeatureStates[configKey]) end
-        end
-
-        SVFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDraggingSV = true
-                updateSV(input)
-            end
-        end)
-
-        HueSlider.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDraggingHue = true
-                updateHue(input)
-            end
-        end)
-
-        UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                isDraggingSV = false
-                isDraggingHue = false
-            end
-        end)
-
-        UserInputService.InputChanged:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement then
-                if isDraggingSV then
-                    updateSV(input)
-                elseif isDraggingHue then
-                    updateHue(input)
-                end
-            end
-        end)
-    end
-
-    local function createActionButton(parent, label, callback)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.BorderSizePixel = 0
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -110, 1, 0)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-
-        local ActionBtn = Instance.new("TextButton")
-        ActionBtn.Size = UDim2.new(0, 90, 0, 24)
-        ActionBtn.Position = UDim2.new(1, -102, 0.5, -12)
-        ActionBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-        ActionBtn.Text = "Save Config"
-        ActionBtn.TextColor3 = Settings.UIColor
-        ActionBtn.Font = Enum.Font.GothamBold
-        ActionBtn.TextSize = 10
-        ActionBtn.Parent = Row
-        addCorner(ActionBtn, 4)
-        addSafeBorder(ActionBtn, Color3.fromRGB(35, 35, 45))
-
-        ActionBtn.MouseButton1Click:Connect(function()
-            createTween(ActionBtn, {BackgroundColor3 = Settings.UIColor}, 0.08)
-            ActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            callback()
-            task.wait(0.1)
-            createTween(ActionBtn, {BackgroundColor3 = Color3.fromRGB(24, 24, 30)}, 0.12)
-            ActionBtn.TextColor3 = Settings.UIColor
-        end)
-    end
-
-    local function createKeybindSelector(parent, label, configKey)
-        local Row = Instance.new("Frame")
-        Row.Size = UDim2.new(1, -5, 0, 40)
-        Row.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
-        Row.Parent = parent
-        addCorner(Row, 5)
-        addSafeBorder(Row, Color3.fromRGB(22, 22, 26))
-
-        local TextLabel = Instance.new("TextLabel")
-        TextLabel.Size = UDim2.new(1, -100, 1, 0)
-        TextLabel.Position = UDim2.new(0, 12, 0, 0)
-        TextLabel.BackgroundTransparency = 1
-        TextLabel.Text = label
-        TextLabel.TextColor3 = Color3.fromRGB(210, 210, 215)
-        TextLabel.Font = Enum.Font.GothamMedium
-        TextLabel.TextSize = 11
-        TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-        TextLabel.Parent = Row
-        
-        local BindBtn = Instance.new("TextButton")
-        BindBtn.Size = UDim2.new(0, 80, 0, 22)
-        BindBtn.Position = UDim2.new(1, -92, 0.5, -11)
-        BindBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-        BindBtn.Text = Settings[configKey].Name
-        BindBtn.TextColor3 = Settings.UIColor
-        BindBtn.Font = Enum.Font.GothamBold
-        BindBtn.TextSize = 10
-        BindBtn.Parent = Row
-        addCorner(BindBtn, 4)
-        addSafeBorder(BindBtn, Color3.fromRGB(35, 35, 45))
-        
-        local listening = false
-        BindBtn.MouseButton1Click:Connect(function()
-            listening = true
-            BindBtn.Text = "..."
-        end)
-        
-        UserInputService.InputBegan:Connect(function(input)
-            if listening and input.UserInputType == Enum.UserInputType.Keyboard then
-                if input.KeyCode == Enum.KeyCode.Escape then
-                    BindBtn.Text = Settings[configKey].Name
-                    listening = false
-                else
-                    Settings[configKey] = input.KeyCode
-                    BindBtn.Text = input.KeyCode.Name
-                    listening = false
-                end
-            end
-        end)
-    end
-
-    -- ...existing code...
-    -- create tabs: removed Orbit + Void; start with Visuals as default
-    -- local OrbitPage = createTab("Orbit")
-    -- local VoidPage = createTab("Void")
-    local VisualsPage = createTab("Visuals")
-    local MiscPage = createTab("Misc")
-    local SettingsPage = createTab("Settings")
-
-    -- make Visuals the initially visible tab
-    tabs["Visuals"].Page.Visible = true
-    tabs["Visuals"].Btn.BackgroundTransparency = 0
-    tabs["Visuals"].Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-    -- removed Orbit UI rows and Void UI rows (orbit/void features removed)
-    
-    -- Visuals Section Integration (kept + added new controls)
-    createToggleRow(VisualsPage, "Hide Game Crosshair", "HideGameCrosshair", false, toggleHideGameCrosshair)
-    createToggleRow(VisualsPage, "Custom Crosshair", "Crosshair", false, toggleCrosshair)
-    createCycleRow(VisualsPage, "Crosshair Shape", "CrosshairShape", {"Square", "Circle", "Classic", "X", "Triangle", "Arrow", "Horizontal Line"}, FeatureStates.CrosshairShape, updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Crosshair Size", "CrosshairSize", 1, 30, FeatureStates.CrosshairSize, "x", updateCrosshairVisuals)
-    gapSliderRow = createSliderRow(VisualsPage, "Crosshair Gap", "CrosshairGap", 0, 30, FeatureStates.CrosshairGap, "px", updateCrosshairVisuals)
-    thicknessSliderRow = createSliderRow(VisualsPage, "Crosshair Thickness", "CrosshairThickness", 1, 10, FeatureStates.CrosshairThickness, "px", updateCrosshairVisuals)
-    lengthSliderRow = createSliderRow(VisualsPage, "Crosshair Length", "CrosshairLength", 4, 60, FeatureStates.CrosshairLength, "px", updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Crosshair Opacity", "CrosshairOpacity", 0, 100, FeatureStates.CrosshairOpacity, "%", updateCrosshairVisuals)
-    createColorPickerRow(VisualsPage, "Crosshair Color (Custom)", "CrosshairColor", updateCrosshairVisuals)
-    createCycleRow(VisualsPage, "Color Mode", "CrosshairColorMode", {"Custom", "Rainbow"}, FeatureStates.CrosshairColorMode, updateCrosshairVisuals)
-    createToggleRow(VisualsPage, "Crosshair Outline", "CrosshairOutline", false, updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Outline Thickness (Shapes)", "CrosshairOutlineThickness", 1, 5, FeatureStates.CrosshairOutlineThickness, "px", updateCrosshairVisuals)
-    createColorPickerRow(VisualsPage, "Outline Color", "CrosshairOutlineColor", updateCrosshairVisuals)
-
-    -- new: text outline thickness slider
-    createSliderRow(VisualsPage, "Text Outline Thickness", "CrosshairTextOutlineThickness", 0, 8, FeatureStates.CrosshairTextOutlineThickness, "px", updateCrosshairVisuals)
-
-    createToggleRow(VisualsPage, "Show Crosshair Text", "CrosshairText", false, updateCrosshairVisuals)
-    createInputRow(VisualsPage, "Custom Text", "CrosshairCustomText", FeatureStates.CrosshairCustomText, updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Text Size", "CrosshairTextSize", 8, 24, FeatureStates.CrosshairTextSize, "pt", updateCrosshairVisuals)
-    createCycleRow(VisualsPage, "Text Style", "CrosshairTextStyle", {"Rainbow", "UI Color", "White"}, FeatureStates.CrosshairTextStyle, updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Text Offset X", "CrosshairTextOffsetX", -100, 100, FeatureStates.CrosshairTextOffsetX, "px", updateCrosshairVisuals)
-    createSliderRow(VisualsPage, "Text Offset Y", "CrosshairTextOffsetY", -100, 100, FeatureStates.CrosshairTextOffsetY, "px", updateCrosshairVisuals)
-
-    -- new spin controls
-    createSliderRow(VisualsPage, "Spin Speed", "CrosshairSpinSpeed", 0, 20, FeatureStates.CrosshairSpinSpeed, "deg/s", updateCrosshairVisuals)
-    createCycleRow(VisualsPage, "Spin Direction", "CrosshairSpinDirection", {"None", "Clockwise", "Anticlockwise"}, FeatureStates.CrosshairSpinDirection, updateCrosshairVisuals)
-    
-    updateCrosshairVisuals()
--- ...existing code...
-    createToggleRow(MiscPage, "Anti Subspace Tripmine", "AntiTrip", false, toggleAntiTrip)
-    createToggleRow(MiscPage, "Auto Collect Drops", "AutoCollect", false, toggleAutoCollect)
-    createToggleRow(MiscPage, "Auto Respawn", "AutoRespawn", false, toggleAutoRespawn)
-
-    createToggleRow(MiscPage, "Anti-Mod", "AntiMod", false, toggleAntiMod)
-    createToggleRow(MiscPage, "Anti-AFK", "AntiAFK", false, toggleAntiAFK)
-    createToggleRow(MiscPage, "FPS Boost", "FPSBoost", false, toggleFPSBoost)
-
-    createToggleRow(SettingsPage, "Auto Execute", "AutoExecute", true, function(state) end)
-    createToggleRow(SettingsPage, "Show Intro Watermark", "ShowWatermark", true, function(state) end)
-    createToggleRow(SettingsPage, "Show GUI on Startup", "ShowGuiOnLoad", true, function(state) end)
-
-    createKeybindSelector(SettingsPage, "Menu Keybind", "ToggleKey")
-
-    createActionButton(SettingsPage, "Save Current Settings Parameters", function()
-        saveSettings()
+    -- try to load external ui-library
+    local ok, library = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/ui-library.lua"))()
     end)
 
-    for key, _ in pairs(RegisteredUIComponents) do
-        local isSetting = (key == "AutoExecute" or key == "ShowWatermark" or key == "ShowGuiOnLoad")
-        updateUIToggleVisual(key, isSetting)
-    end
+    -- fallback simple UI if library fails
+    if not ok or not library then
+        warn("[jugg.lua] ui-library load failed, falling back to minimal menu.")
 
-   -- ...existing code...
-    UserInputService.InputBegan:Connect(function(input, processed)
-        if not processed and input.UserInputType == Enum.UserInputType.Keyboard then
-            if input.KeyCode == Settings.ToggleKey then
+        local ScreenGui = Instance.new("ScreenGui")
+        ScreenGui.Name = "JuggProfileGui"
+        ScreenGui.ResetOnSpawn = false
+        ScreenGui.DisplayOrder = 2136372536
+        ScreenGui.Parent = targetGui
+
+        local MainFrame = Instance.new("Frame")
+        MainFrame.Name = "MainFrame"
+        MainFrame.Size = UDim2.new(0, 520, 0, 340)
+        MainFrame.Position = UDim2.new(0.5, -260, 0.5, -170)
+        MainFrame.BackgroundColor3 = Color3.fromRGB(9, 9, 11)
+        MainFrame.BackgroundTransparency = Settings.UITransparency
+        MainFrame.BorderSizePixel = 0
+        MainFrame.Visible = Settings.ShowGuiOnLoad
+        MainFrame.Parent = ScreenGui
+        addCorner(MainFrame, 8)
+        addSafeBorder(MainFrame, Color3.fromRGB(28, 28, 35))
+        makeDraggable(MainFrame, MainFrame)
+
+        -- minimal keybind toggle for fallback
+        UserInputService.InputBegan:Connect(function(input, processed)
+            if not processed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Settings.ToggleKey then
                 MainFrame.Visible = not MainFrame.Visible
-            -- removed VoidKey toggle (void feature removed)
+            end
+        end)
+
+        return
+    end
+
+    -- build menu with ui-library (single, clean definition)
+    local menu = library.new([[jugg <font color="rgb(147, 51, 234)">lua</font>]], "jugglua\\")
+    local tabs = {
+        menu.new_tab("http://www.roblox.com/asset/?id=7300477598"),
+        menu.new_tab("http://www.roblox.com/asset/?id=7300535052"),
+        menu.new_tab("http://www.roblox.com/asset/?id=7300480952"),
+    }
+
+    -- Visuals tab (two-column crosshair controls)
+    do
+        local visuals = tabs[1].new_section("visuals")
+
+        -- create two real sectors (left + right) so the library places UI in correct columns
+        local left = visuals.new_sector("crosshair")
+        local right = visuals.new_sector("crosshair text", "Right")
+
+        -- store references used by crosshair updater
+        gapSliderRow = nil
+        thicknessSliderRow = nil
+        lengthSliderRow = nil
+
+        -- helper aliases
+        local function L(...) return left.element(...) end
+        local function R(...) return right.element(...) end
+
+        L("Toggle", "Hide Game Crosshair", {default = {Toggle = FeatureStates.HideGameCrosshair}}, function(v)
+            FeatureStates.HideGameCrosshair = v.Toggle
+            toggleHideGameCrosshair(v.Toggle)
+        end)
+
+        L("Toggle", "Custom Crosshair", {default = {Toggle = FeatureStates.Crosshair}}, function(v)
+            FeatureStates.Crosshair = v.Toggle
+            toggleCrosshair(v.Toggle)
+            updateCrosshairVisuals()
+        end)
+
+        local shapeElem = L("Dropdown", "Crosshair Shape", {options = {"Square","Circle","Classic","X","Triangle","Arrow","Horizontal Line"}})
+        shapeElem:set_value({Dropdown = FeatureStates.CrosshairShape}, true)
+
+        L("Slider", "Crosshair Size", {default = {min=1,max=30,default=FeatureStates.CrosshairSize}}, function(v) FeatureStates.CrosshairSize = v.Slider updateCrosshairVisuals() end)
+        gapSliderRow = L("Slider", "Crosshair Gap", {default = {min=0,max=30,default=FeatureStates.CrosshairGap}}, function(v) FeatureStates.CrosshairGap = v.Slider updateCrosshairVisuals() end)
+        thicknessSliderRow = L("Slider", "Crosshair Thickness", {default = {min=1,max=10,default=FeatureStates.CrosshairThickness}}, function(v) FeatureStates.CrosshairThickness = v.Slider updateCrosshairVisuals() end)
+        lengthSliderRow = L("Slider", "Crosshair Length", {default = {min=4,max=60,default=FeatureStates.CrosshairLength}}, function(v) FeatureStates.CrosshairLength = v.Slider updateCrosshairVisuals() end)
+        L("Slider", "Crosshair Opacity", {default = {min=0,max=100,default=FeatureStates.CrosshairOpacity}}, function(v) FeatureStates.CrosshairOpacity = v.Slider updateCrosshairVisuals() end)
+
+        local colorElem = L("Toggle", "Crosshair Color (preview)")
+        colorElem:add_color({Color = parseColor(FeatureStates.CrosshairColor)}, false, function(val)
+            if val and val.Color then
+                FeatureStates.CrosshairColor = "#" .. val.Color:ToHex():upper()
+                updateCrosshairVisuals()
+            end
+        end)
+
+        L("Dropdown", "Color Mode", {options = {"Custom","Rainbow"}}, function(v) FeatureStates.CrosshairColorMode = v.Dropdown updateCrosshairVisuals() end)
+        L("Toggle", "Crosshair Outline", {default = {Toggle = FeatureStates.CrosshairOutline}}, function(v) FeatureStates.CrosshairOutline = v.Toggle updateCrosshairVisuals() end)
+        L("Slider", "Outline Thickness (Shapes)", {default = {min=1,max=5,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
+
+        local outlineDummy = L("Toggle", "Outline Color (preview)")
+        outlineDummy:add_color({Color = parseColor(FeatureStates.CrosshairOutlineColor) or Settings.UIColor}, false, function(val)
+            if val and val.Color then FeatureStates.CrosshairOutlineColor = "#" .. val.Color:ToHex():upper() updateCrosshairVisuals() end
+        end)
+
+        L("Slider", "Spin Speed (deg/s)", {default={min=0,max=20,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
+        L("Dropdown", "Spin Direction", {options={"None","Clockwise","Anticlockwise"}}, function(v) FeatureStates.CrosshairSpinDirection = v.Dropdown updateCrosshairVisuals() end)
+
+        -- right column: text settings
+        R("Toggle", "Show Crosshair Text", {default={Toggle=FeatureStates.CrosshairText}}, function(v) FeatureStates.CrosshairText = v.Toggle updateCrosshairVisuals() end)
+        R("TextBox", "Custom Text", {default = FeatureStates.CrosshairCustomText}, function(v) FeatureStates.CrosshairCustomText = v.Text updateCrosshairVisuals() end)
+        R("Slider", "Text Size", {default={min=8,max=24,default=FeatureStates.CrosshairTextSize}}, function(v) FeatureStates.CrosshairTextSize = v.Slider updateCrosshairVisuals() end)
+        R("Dropdown", "Text Style", {options={"Rainbow","UI Color","White"}}, function(v) FeatureStates.CrosshairTextStyle = v.Dropdown updateCrosshairVisuals() end)
+        R("Slider", "Text Offset X", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetX}}, function(v) FeatureStates.CrosshairTextOffsetX = v.Slider updateCrosshairVisuals() end)
+        R("Slider", "Text Offset Y", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetY}}, function(v) FeatureStates.CrosshairTextOffsetY = v.Slider updateCrosshairVisuals() end)
+        R("Slider", "Text Outline Thickness", {default={min=0,max=8,default=FeatureStates.CrosshairTextOutlineThickness}}, function(v) FeatureStates.CrosshairTextOutlineThickness = v.Slider updateCrosshairVisuals() end)
+
+        menu.on_load_cfg:Connect(function() updateCrosshairVisuals() end)
+        updateCrosshairVisuals()
+    end
+
+    -- Misc tab
+    do
+        local misc = tabs[2].new_section("misc")
+        local main = misc.new_sector("main")
+        main.element("Toggle", "Anti Subspace Tripmine", {default = {Toggle = FeatureStates.AntiTrip}}, function(v) toggleAntiTrip(v.Toggle) end)
+        main.element("Toggle", "Auto Collect Drops", {default = {Toggle = FeatureStates.AutoCollect}}, function(v) toggleAutoCollect(v.Toggle) end)
+        main.element("Toggle", "Auto Respawn", {default = {Toggle = FeatureStates.AutoRespawn}}, function(v) toggleAutoRespawn(v.Toggle) end)
+        main.element("Toggle", "Anti-Mod", {default = {Toggle = FeatureStates.AntiMod}}, function(v) FeatureStates.AntiMod = v.Toggle if v.Toggle then toggleAntiMod(true) end end)
+        main.element("Toggle", "Anti-AFK", {default = {Toggle = FeatureStates.AntiAFK}}, function(v) toggleAntiAFK(v.Toggle) end)
+        main.element("Toggle", "FPS Boost", {default = {Toggle = FeatureStates.FPSBoost}}, function(v) toggleFPSBoost(v.Toggle) end)
+    end
+
+    -- Settings tab
+    do
+        local sett = tabs[3].new_section("settings")
+        local main = sett.new_sector("main")
+        main.element("Toggle", "Auto Execute", {default = {Toggle = Settings.AutoExecute}}, function(v) Settings.AutoExecute = v.Toggle end)
+        main.element("Toggle", "Show Intro Watermark", {default = {Toggle = Settings.ShowWatermark}}, function(v) Settings.ShowWatermark = v.Toggle end)
+        main.element("Toggle", "Show GUI on Startup", {default = {Toggle = Settings.ShowGuiOnLoad}}, function(v) Settings.ShowGuiOnLoad = v.Toggle end)
+
+        main.element("TextBox", "Menu Keybind (name)", {default = Settings.ToggleKey.Name}, function(v)
+            if v.Text and Enum.KeyCode[v.Text] then
+                Settings.ToggleKey = Enum.KeyCode[v.Text]
+            end
+        end)
+
+        main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
+    end
+
+    -- create anchor gui so keybind toggles reliably
+    local anchorGui = Instance.new("ScreenGui")
+    anchorGui.Name = "JuggProfileGui"
+    anchorGui.ResetOnSpawn = false
+    anchorGui.DisplayOrder = 2136372536
+    anchorGui.Parent = targetGui
+
+    local function findMainFrame()
+        -- prefer library-provided main frame if present
+        for _,c in ipairs(anchorGui:GetChildren()) do
+            if c:IsA("Frame") and c.Visible then
+                return c
+            end
+        end
+        return anchorGui
+    end
+    local mainToggleTarget = findMainFrame()
+
+    UserInputService.InputBegan:Connect(function(input, processed)
+        if not processed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Settings.ToggleKey then
+            if mainToggleTarget:IsA("ScreenGui") then
+                mainToggleTarget.Enabled = not mainToggleTarget.Enabled
+            else
+                mainToggleTarget.Visible = not mainToggleTarget.Visible
             end
         end
     end)
--- ...existing code...
 
-    LocalPlayer.CharacterAdded:Connect(function(char)
-        character = char 
-        hrp = char:WaitForChild("HumanoidRootPart")
-        if FeatureStates.OrbitAura then toggleOrbitAura(false) task.wait(0.1) toggleOrbitAura(true) end
-        if FeatureStates.SmoothOrbit then toggleSmoothOrbit(false) task.wait(0.1) toggleSmoothOrbit(true) end
-        if FeatureStates.AutoRespawn then setupRespawn(char) end
-        -- Re-apply hide crosshair after respawn rebuilds PlayerGui
-        if FeatureStates.HideGameCrosshair then
-            task.wait(0.5)
-            toggleHideGameCrosshair(true)
-        end
-    end)
+    updateCrosshairVisuals()
 end
 
 --------------------------------------------------
 -- INITIALIZATION THREAD EXECUTOR (INSTANT RUN)
 --------------------------------------------------
--- ...existing code...
 local function initializeCoreThreads()
     if Settings.AutoExecute then setupAutoExecute() end
-    -- orbit/void features removed from automatic initialization
     if FeatureStates.AntiTrip then toggleAntiTrip(true) end       
     if FeatureStates.AutoCollect then toggleAutoCollect(true) end 
     if FeatureStates.AutoRespawn then toggleAutoRespawn(true) end
@@ -1790,7 +1238,6 @@ local function initializeCoreThreads()
     -- Silent initialization of Visual threads
     if FeatureStates.Crosshair then toggleCrosshair(true) end
 end
--- ...existing code...
 
 --------------------------------------------------
 -- INITIALIZATION SEQUENCE 
