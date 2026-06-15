@@ -222,6 +222,8 @@ function library.new(library_title, cfg_location)
         HorizontalAlignment = Enum.HorizontalAlignment.Center
     }, TabButtons)
 
+    
+
     local Tabs = library:create("Frame", {
         Name = "Tabs",
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
@@ -387,11 +389,14 @@ end
                 Visible = false,
             }, TabFrames)
 
-            local Left = library:create("Frame", {
+            local Left = library:create("ScrollingFrame", {
                 Name = "Left",
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 8, 0, 14),
                 Size = UDim2.new(0, 282, 0, 395),
+                CanvasSize = UDim2.new(0, 0, 0, 0),
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                ScrollBarThickness = 0,
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
@@ -400,11 +405,14 @@ end
                 Padding = UDim.new(0, 12),
             }, Left)
 
-            local Right = library:create("Frame", {
+            local Right = library:create("ScrollingFrame", {
                 Name = "Right",
                 BackgroundTransparency = 1,
                 Position = UDim2.new(0, 298, 0, 14),
                 Size = UDim2.new(0, 282, 0, 395),
+                CanvasSize = UDim2.new(0, 0, 0, 0),
+                AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                ScrollBarThickness = 0,
             }, SectionFrame)
 
             local UIListLayout = library:create("UIListLayout", {
