@@ -188,7 +188,7 @@ function library.new(library_title, cfg_location)
         Name = "Main",
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BorderColor3 = Color3.fromRGB(147, 51, 234),
+        BorderColor3 = Color3.fromRGB(0, 0, 0), -- Reverted to black for the authentic aesthetic
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 700, 0, 500),
         Image = "http://www.roblox.com/asset/?id=99289006094669",
@@ -376,18 +376,20 @@ end
                 library:tween(SectionButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(100, 100, 100)})
             end)
 
+            -- Calculates the exact pixel width of the section name
+            local text_width = library:get_text_size(section_name, 15, Enum.Font.Ubuntu, Vector2.new(500, 20)).X
+            
             local SectionDecoration = library:create("Frame", {
                 Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Solid Jugg Purple (no messy gradient)
                 BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 0, 27),
-                Size = UDim2.new(1, 0, 0, 1),
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.new(0.5, 0, 0, 27),
+                Size = UDim2.new(0, text_width + 12, 0, 2), -- Snaps exactly to the text width + small padding
                 Visible = false,
             }, SectionButton)
-
-            local UIGradient = library:create("UIGradient", {
-                Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(32, 33, 38)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(147, 51, 234)), ColorSequenceKeypoint.new(1, Color3.fromRGB(32, 33, 38))},
-            }, SectionDecoration)
+            
+            -- We completely removed the UIGradient here so it looks like a clean, authentic Cripware line
 
             local SectionFrame = library:create("Frame", {
                 Name = "SectionFrame",
