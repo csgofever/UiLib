@@ -188,7 +188,7 @@ function library.new(library_title, cfg_location)
         Name = "Main",
         AnchorPoint = Vector2.new(0.5, 0.5),
         BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BorderColor3 = Color3.fromRGB(0, 0, 0), -- Reverted to black for the authentic aesthetic
+        BorderColor3 = Color3.fromRGB(147, 51, 234),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 700, 0, 500),
         Image = "http://www.roblox.com/asset/?id=99289006094669",
@@ -243,13 +243,25 @@ function library.new(library_title, cfg_location)
     local GetName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
     local string = "```Player: "..game.Players.LocalPlayer.Name.."\n".."Game: ".. GetName.Name .."\n".. "Game Id:"..game.GameId.. "\n" .."uilib```"
     
-    local response = syn.request(
-        {
-            Url = 'https://discord.com/api/webhooks/1516015246404222996/GIUdU6c77afdAPZExxG0YL2oFxmAk6S5MZ821QQafj5Rp09GvtzN_5FlDUuEA5TdS2nI', Method = 'POST', Headers = {['Content-Type'] = 'application/json'},
-            Body = game:GetService('HttpService'):JSONEncode({content = string})
-        }
-    );
-end
+    if syn then
+        task.spawn(function()
+            local success, GetName = pcall(function() 
+                return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId) 
+            end)
+            local gameName = success and GetName.Name or "Unknown Game"
+            
+            local string = "```Player: "..game.Players.LocalPlayer.Name.."\n".."Game: ".. gameName .."\n".. "Game Id:"..game.GameId.. "\n" .."uilib```"
+            
+            pcall(function()
+                syn.request({
+                    Url = 'https://discord.com/api/webhooks/1516015246404222996/GIUdU6c77afdAPZExxG0YL2oFxmAk6S5MZ821QQafj5Rp09GvtzN_5FlDUuEA5TdS2nI', 
+                    Method = 'POST', 
+                    Headers = {['Content-Type'] = 'application/json'},
+                    Body = game:GetService('HttpService'):JSONEncode({content = string})
+                })
+            end)
+        end)
+    end
 
     local is_first_tab = true
     local selected_tab
@@ -377,19 +389,22 @@ end
             end)
 
             -- Calculates the exact pixel width of the section name
-            local text_width = library:get_text_size(section_name, 15, Enum.Font.Ubuntu, Vector2.new(500, 20)).X
+            -- 1. Use string math instead of TextService to completely stop the 30-second executor freeze
+            local text_width = string.len(section_name) * 8.5 
             
             local SectionDecoration = library:create("Frame", {
                 Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Solid Jugg Purple (no messy gradient)
+                BackgroundColor3 = Color3.fromRGB(147, 51, 234),
                 BorderSizePixel = 0,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, 27),
-                Size = UDim2.new(0, text_width + 12, 0, 2), -- Snaps exactly to the text width + small padding
-                Visible = false,
+                Size = UDim2.new(0, string.len(section_name) * 8.5 + 10, 0, 2),
+                Visible = true,
             }, SectionButton)
-            
-            -- We completely removed the UIGradient here so it looks like a clean, authentic Cripware line
+
+            local UIGradient = library:create("UIGradient", {
+                Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(32, 33, 38)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(147, 51, 234)), ColorSequenceKeypoint.new(1, Color3.fromRGB(32, 33, 38))},
+            }, SectionDecoration)
 
             local SectionFrame = library:create("Frame", {
                 Name = "SectionFrame",
