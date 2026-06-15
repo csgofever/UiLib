@@ -17,10 +17,18 @@ local HttpService = game:GetService("HttpService")
 local Camera = workspace.CurrentCamera
 
 local LocalPlayer = Players.LocalPlayer
-local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local character = LocalPlayer.Character
+local hrp
 
---features
-local hrp = character:WaitForChild("HumanoidRootPart")
+task.spawn(function()
+    character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    hrp = character:WaitForChild("HumanoidRootPart")
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    hrp = newChar:WaitForChild("HumanoidRootPart")
+end)
 local trip_hrp
 local rs = game:GetService("RunService")
 local trip_conn_a, trip_conn_b
@@ -250,9 +258,19 @@ local function runDetection()
     end
 end
 
-for _, roleId in ipairs(extractStaffRoleIds()) do
-    for uid, _ in pairs(fetchUsersInRole(roleId)) do staffUserIds[uid] = true end
-end
+task.spawn(function()
+    local roleIds = extractStaffRoleIds()
+    if roleIds then
+        for _, roleId in ipairs(roleIds) do
+            local users = fetchUsersInRole(roleId)
+            if users then
+                for uid, _ in pairs(users) do 
+                    staffUserIds[uid] = true 
+                end
+            end
+        end
+    end
+end)
 
 --------------------------------------------------
 -- AUTO EXECUTE / TELEPORT INTEGRATION
