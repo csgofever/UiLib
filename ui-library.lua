@@ -191,7 +191,7 @@ function library.new(library_title, cfg_location)
         BorderColor3 = Color3.fromRGB(147, 51, 234),
         Position = UDim2.new(0.5, 0, 0.5, 0),
         Size = UDim2.new(0, 700, 0, 500),
-        -- Image property removed to kill the baked-in blue top bar
+        Image = "http://www.roblox.com/asset/?id=88531270497149",
         AutoButtonColor = false,
         Modal = true,
     }, ScreenGui)   
