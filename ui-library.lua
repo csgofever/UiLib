@@ -394,12 +394,12 @@ function library.new(library_title, cfg_location)
             
             local SectionDecoration = library:create("Frame", {
                 Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Solid Jugg Purple
+                BackgroundColor3 = Color3.fromRGB(147, 51, 234),
                 BorderSizePixel = 0,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, 27),
-                Size = UDim2.new(0, text_width + 10, 0, 2), -- Snaps cleanly under the text
-                Visible = true, -- 2. Set back to true so you actually see the Cripware line!
+                Size = UDim2.new(0, string.len(section_name) * 8.5 + 10, 0, 2),
+                Visible = true,
             }, SectionButton)
             
             -- We completely removed the UIGradient here so it looks like a clean, authentic Cripware line
