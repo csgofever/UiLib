@@ -2217,5 +2217,3 @@ function library.new(library_title, cfg_location)
 
     return menu
 end
-
-return library
