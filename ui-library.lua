@@ -1718,8 +1718,15 @@ function library.new(library_title, cfg_location)
                         end
                         element:set_value(value, true)
                     elseif type == "Keybind" then
-                        Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
+                        -- Safely handle border resizing if it exists
+                        if Border then
+                            Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
+                        end
+                        
                         value = {Key = data.default and data.default or "RightShift"}
+                        if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
+                            menu.values[tab.tab_num][section_name][sector_name][flag] = value
+                        end
 
                         local ButtonFrame = library:create("Frame", {
                             Name = "ButtonFrame",
@@ -1778,7 +1785,7 @@ function library.new(library_title, cfg_location)
                         uis.InputBegan:Connect(function(input)
                             if is_binding then
                                 local new_key = input.KeyCode.Name
-                                if new_key == "Unknown" then return end -- Ignore mouse clicks
+                                if new_key == "Unknown" then return end
                                 
                                 is_binding = false
                                 library:tween(KeybindBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BorderColor3 = Color3.fromRGB(0, 0, 0)})
@@ -1790,7 +1797,10 @@ function library.new(library_title, cfg_location)
                                 KeybindBtn.Text = "[ " .. new_key:upper() .. " ]"
                                 value.Key = new_key
                                 
-                                -- Small delay so the menu doesn't instantly close when setting the key
+                                if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
+                                    menu.values[tab.tab_num][section_name][sector_name][flag] = value
+                                end
+                                
                                 task.delay(0.1, function()
                                     do_callback()
                                 end)
@@ -1798,8 +1808,18 @@ function library.new(library_title, cfg_location)
                         end)
 
                         function element:set_value(new_value, cb)
-                            value = new_value or value
-                            KeybindBtn.Text = "[ " .. tostring(value.Key):upper() .. " ]"
+                            -- Auto-convert old string configs to the new table layout seamlessly
+                            if typeof(new_value) == "string" then
+                                value = {Key = new_value}
+                            elseif typeof(new_value) == "table" then
+                                value = new_value or value
+                            end
+                            
+                            KeybindBtn.Text = "[ " .. tostring(value.Key or "None"):upper() .. " ]"
+                            if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
+                                menu.values[tab.tab_num][section_name][sector_name][flag] = value
+                            end
+                            
                             if cb == nil or not cb then
                                 do_callback()
                             end
