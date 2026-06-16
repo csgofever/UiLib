@@ -388,9 +388,7 @@ function library.new(library_title, cfg_location)
                 library:tween(SectionButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(100, 100, 100)})
             end)
 
-<<<<<<< HEAD
             -- Calculates the exact pixel width of the section name
-            -- 1. Use string math instead of TextService to completely stop the 30-second executor freeze
             local text_width = string.len(section_name) * 8.5 
             
             local SectionDecoration = library:create("Frame", {
@@ -399,17 +397,8 @@ function library.new(library_title, cfg_location)
                 BorderSizePixel = 0,
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, 27),
-                Size = UDim2.new(0, string.len(section_name) * 8.5 + 10, 0, 2),
+                Size = UDim2.new(0, text_width + 10, 0, 2),
                 Visible = true,
-=======
-            local SectionDecoration = library:create("Frame", {
-                Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 0, 27),
-                Size = UDim2.new(1, 0, 0, 1),
-                Visible = false,
->>>>>>> parent of 0af6675 (fix tabs)
             }, SectionButton)
 
             local UIGradient = library:create("UIGradient", {
