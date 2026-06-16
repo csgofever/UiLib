@@ -1067,10 +1067,35 @@ local function InitializeMainMenu()
         targetGui.JuggProfileGui:Destroy()
     end
 
-    -- try to load external ui-library
-    local ok, library = pcall(function()
-        return loadstring(game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/ui-library.lua"))()
+    -- DIAGNOSTIC UI LIBRARY LOADER
+    local success, library = pcall(function()
+        local library_source = game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/ui-library.lua")
+        
+        -- Check for leftover git conflict markers before running
+        if library_source:match("<<<<<<<") or library_source:match("=======") or library_source:match(">>>>>>>") then
+            error("Syntax Error: There are still leftover Git merge conflict markers (<<<<<<<, =======, or >>>>>>>) inside your ui-library.lua file on GitHub!")
+        end
+
+        local loader_func, compile_err = loadstring(library_source)
+        if not loader_func then 
+            error("Syntax/Compile Error: " .. tostring(compile_err)) 
+        end
+        
+        local run_success, run_res = pcall(loader_func)
+        if not run_success then 
+            error("Runtime Execution Error: " .. tostring(run_res)) 
+        end
+        
+        return run_res
     end)
+
+    if not success then
+        -- This will print the exact line number and problem directly into your console
+        warn("============= UI LIBRARY LOAD ERROR =============")
+        warn(tostring(library))
+        warn("=================================================")
+        return
+    end
 
     -- fallback simple UI if library fails
     if not ok or not library then
