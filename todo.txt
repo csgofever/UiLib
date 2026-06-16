@@ -1,0 +1,3 @@
+fix save config/config in general (i think causes the hang at start, when turn off watermark on load it hangs)
+fix gui keybind
+fix colorpicker not working

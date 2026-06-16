@@ -1206,20 +1206,15 @@ local function InitializeMainMenu()
         main.element("Toggle", "Show Intro Watermark", {default = {Toggle = Settings.ShowWatermark}}, function(v) Settings.ShowWatermark = v.Toggle end)
         main.element("Toggle", "Show GUI on Startup", {default = {Toggle = Settings.ShowGuiOnLoad}}, function(v) Settings.ShowGuiOnLoad = v.Toggle end)
 
-        main.element("TextBox", "Menu Keybind (name)", {default = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift"}, function(v)
-        if v == nil then return end 
-        local enteredText = type(v) == "string" and v or v.Text
-        
-        -- Ignore empty boxes or the new "..." indicator
-        if not enteredText or enteredText == "" or enteredText == "..." then return end
-
-        local success, key = pcall(function() return Enum.KeyCode[enteredText] end)
-        if success and key then
-            Settings.ToggleKey = key
-        else
-            warn("Invalid KeyCode entered in Menu Keybind: " .. tostring(enteredText))
-        end
-    end)
+        main.element("Keybind", "Menu Toggle Key", {default = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift"}, function(v)
+            if v and v.Key then
+                if v.Key == "None" then return end
+                local success, key = pcall(function() return Enum.KeyCode[v.Key] end)
+                if success and key then
+                    Settings.ToggleKey = key
+                end
+            end
+        end)
         main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
     end
 
