@@ -75,41 +75,41 @@ function library:set_draggable(gui)
     end)
 end
 
-    function library.new(library_title, cfg_location)
-        local menu = {}
-        menu.values = {}
-        menu.on_load_cfg = library.signal.new("on_load_cfg")
+function library.new(library_title, cfg_location)
+    local menu = {}
+    menu.values = {}
+    menu.on_load_cfg = library.signal.new("on_load_cfg")
 
-        if not isfolder(cfg_location) then
-            makefolder(cfg_location)
-        end
-        
-        function menu.copy(original)
-            local copy = {}
-            for k, v in pairs(original) do
-                if type(v) == "table" then
-                    v = menu.copy(v)
-                end
-                copy[k] = v
+    if not isfolder(cfg_location) then
+        makefolder(cfg_location)
+    end
+    
+    function menu.copy(original)
+        local copy = {}
+        for k, v in pairs(original) do
+            if type(v) == "table" then
+                v = menu.copy(v)
             end
-            return copy
+            copy[k] = v
         end
-        function menu.save_cfg(cfg_name)
-            local values_copy = menu.copy(menu.values)
-            for _,tab in next, values_copy do
-                for _,section in next, tab do
-                    for _,sector in next, section do
-                        for _,element in next, sector do
-                            if not element.Color then continue end
+        return copy
+    end
+    function menu.save_cfg(cfg_name)
+        local values_copy = menu.copy(menu.values)
+        for _,tab in next, values_copy do
+            for _,section in next, tab do
+                for _,sector in next, section do
+                    for _,element in next, sector do
+                        if not element.Color then continue end
 
-                            element.Color = {R = element.Color.R, G = element.Color.G, B = element.Color.B}
-                        end
+                        element.Color = {R = element.Color.R, G = element.Color.G, B = element.Color.B}
                     end
                 end
             end
-
-            writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
         end
+
+        writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
+    end
     function menu.load_cfg(cfg_name)
         local new_values = http:JSONDecode(readfile(cfg_location..cfg_name..".txt"))
 
@@ -388,17 +388,13 @@ end
                 library:tween(SectionButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(100, 100, 100)})
             end)
 
-            -- Calculates the exact pixel width of the section name
-            local text_width = string.len(section_name) * 8.5 
-            
             local SectionDecoration = library:create("Frame", {
                 Name = "SectionDecoration",
-                BackgroundColor3 = Color3.fromRGB(147, 51, 234),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BorderSizePixel = 0,
-                AnchorPoint = Vector2.new(0.5, 0),
-                Position = UDim2.new(0.5, 0, 0, 27),
-                Size = UDim2.new(0, text_width + 10, 0, 2),
-                Visible = true,
+                Position = UDim2.new(0, 0, 0, 27),
+                Size = UDim2.new(1, 0, 0, 1),
+                Visible = false,
             }, SectionButton)
 
             local UIGradient = library:create("UIGradient", {
@@ -653,7 +649,7 @@ end
                             has_extra = true
                             local extra_flag = "$"..flag
 
-                            local extra_value = {Key = nil, Type = "Always", Active = true}
+                            local extra_value = {Key, Type = "Always", Active = true}
                             key_callback = key_callback or function() end
 
                             local Keybind = library:create("TextButton", {
@@ -1717,114 +1713,6 @@ end
                             end
                         end
                         element:set_value(value, true)
-                    elseif type == "Keybind" then
-                        -- Safely handle border resizing if it exists
-                        if Border then
-                            Border.Size = Border.Size + UDim2.new(0, 0, 0, 30)
-                        end
-                        
-                        value = {Key = data.default and data.default or "RightShift"}
-                        if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
-                            menu.values[tab.tab_num][section_name][sector_name][flag] = value
-                        end
-
-                        local ButtonFrame = library:create("Frame", {
-                            Name = "ButtonFrame",
-                            BackgroundTransparency = 1,
-                            Position = UDim2.new(0, 0, 0, 0),
-                            Size = UDim2.new(1, 0, 0, 30),
-                        }, Container)
-
-                        local KeybindText = library:create("TextLabel", {
-                            Name = "KeybindText",
-                            BackgroundTransparency = 1,
-                            Position = UDim2.new(0, 9, 0, 0),
-                            Size = UDim2.new(0.5, 0, 1, 0),
-                            Font = Enum.Font.Ubuntu,
-                            Text = text,
-                            TextColor3 = Color3.fromRGB(150, 150, 150),
-                            TextSize = 14,
-                            TextXAlignment = Enum.TextXAlignment.Left,
-                        }, ButtonFrame)
-
-                        local KeybindBtn = library:create("TextButton", {
-                            Name = "KeybindBtn",
-                            AnchorPoint = Vector2.new(1, 0.5),
-                            BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-                            BorderColor3 = Color3.fromRGB(0, 0, 0),
-                            Position = UDim2.new(1, -9, 0.5, 0),
-                            Size = UDim2.new(0, 80, 0, 20),
-                            AutoButtonColor = false,
-                            Font = Enum.Font.Ubuntu,
-                            Text = "[ " .. tostring(value.Key):upper() .. " ]",
-                            TextColor3 = Color3.fromRGB(150, 150, 150),
-                            TextSize = 14,
-                        }, ButtonFrame)
-
-                        local is_binding = false
-
-                        KeybindBtn.MouseEnter:Connect(function()
-                            library:tween(KeybindText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
-                            library:tween(KeybindBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)})
-                        end)
-                        KeybindBtn.MouseLeave:Connect(function()
-                            if not is_binding then
-                                library:tween(KeybindText, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(150, 150, 150)})
-                                library:tween(KeybindBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(150, 150, 150)})
-                            end
-                        end)
-
-                        KeybindBtn.MouseButton1Down:Connect(function()
-                            if not is_binding then
-                                is_binding = true
-                                KeybindBtn.Text = "[ ... ]"
-                                library:tween(KeybindBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BorderColor3 = Color3.fromRGB(147, 51, 234)})
-                            end
-                        end)
-
-                        uis.InputBegan:Connect(function(input)
-                            if is_binding then
-                                local new_key = input.KeyCode.Name
-                                if new_key == "Unknown" then return end
-                                
-                                is_binding = false
-                                library:tween(KeybindBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BorderColor3 = Color3.fromRGB(0, 0, 0)})
-                                
-                                if new_key == "Backspace" or new_key == "Escape" then
-                                    new_key = "None"
-                                end
-                                
-                                KeybindBtn.Text = "[ " .. new_key:upper() .. " ]"
-                                value.Key = new_key
-                                
-                                if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
-                                    menu.values[tab.tab_num][section_name][sector_name][flag] = value
-                                end
-                                
-                                task.delay(0.1, function()
-                                    do_callback()
-                                end)
-                            end
-                        end)
-
-                        function element:set_value(new_value, cb)
-                            -- Auto-convert old string configs to the new table layout seamlessly
-                            if typeof(new_value) == "string" then
-                                value = {Key = new_value}
-                            elseif typeof(new_value) == "table" then
-                                value = new_value or value
-                            end
-                            
-                            KeybindBtn.Text = "[ " .. tostring(value.Key or "None"):upper() .. " ]"
-                            if menu and menu.values and menu.values[tab.tab_num] and menu.values[tab.tab_num][section_name] and menu.values[tab.tab_num][section_name][sector_name] then
-                                menu.values[tab.tab_num][section_name][sector_name][flag] = value
-                            end
-                            
-                            if cb == nil or not cb then
-                                do_callback()
-                            end
-                        end
-                        element:set_value(value, true)
                     elseif type == "Scroll" then
                         local scrollsize = data.scrollsize and data.scrollsize or 5
 
@@ -2219,4 +2107,3 @@ end
 end
 
 return library
-end

@@ -1067,35 +1067,10 @@ local function InitializeMainMenu()
         targetGui.JuggProfileGui:Destroy()
     end
 
-    -- DIAGNOSTIC UI LIBRARY LOADER
-    local success, library = pcall(function()
-        local library_source = game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/ui-library.lua")
-        
-        -- Check for leftover git conflict markers before running
-        if library_source:match("<<<<<<<") or library_source:match("=======") or library_source:match(">>>>>>>") then
-            error("Syntax Error: There are still leftover Git merge conflict markers (<<<<<<<, =======, or >>>>>>>) inside your ui-library.lua file on GitHub!")
-        end
-
-        local loader_func, compile_err = loadstring(library_source)
-        if not loader_func then 
-            error("Syntax/Compile Error: " .. tostring(compile_err)) 
-        end
-        
-        local run_success, run_res = pcall(loader_func)
-        if not run_success then 
-            error("Runtime Execution Error: " .. tostring(run_res)) 
-        end
-        
-        return run_res
+    -- try to load external ui-library
+    local ok, library = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/ui-library.lua"))()
     end)
-
-    if not success then
-        -- This will print the exact line number and problem directly into your console
-        warn("============= UI LIBRARY LOAD ERROR =============")
-        warn(tostring(library))
-        warn("=================================================")
-        return
-    end
 
     -- fallback simple UI if library fails
     if not ok or not library then
@@ -1231,15 +1206,20 @@ local function InitializeMainMenu()
         main.element("Toggle", "Show Intro Watermark", {default = {Toggle = Settings.ShowWatermark}}, function(v) Settings.ShowWatermark = v.Toggle end)
         main.element("Toggle", "Show GUI on Startup", {default = {Toggle = Settings.ShowGuiOnLoad}}, function(v) Settings.ShowGuiOnLoad = v.Toggle end)
 
-        main.element("Keybind", "Menu Toggle Key", {default = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift"}, function(v)
-            if v and v.Key then
-                if v.Key == "None" then return end
-                local success, key = pcall(function() return Enum.KeyCode[v.Key] end)
-                if success and key then
-                    Settings.ToggleKey = key
-                end
-            end
-        end)
+        main.element("TextBox", "Menu Keybind (name)", {default = (typeof(Settings.ToggleKey) == "EnumItem" and Settings.ToggleKey.Name) or "RightShift"}, function(v)
+        if v == nil then return end 
+        local enteredText = type(v) == "string" and v or v.Text
+        
+        -- Ignore empty boxes or the new "..." indicator
+        if not enteredText or enteredText == "" or enteredText == "..." then return end
+
+        local success, key = pcall(function() return Enum.KeyCode[enteredText] end)
+        if success and key then
+            Settings.ToggleKey = key
+        else
+            warn("Invalid KeyCode entered in Menu Keybind: " .. tostring(enteredText))
+        end
+    end)
         main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
     end
 
