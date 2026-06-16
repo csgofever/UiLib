@@ -94,7 +94,6 @@ end
             end
             return copy
         end
-    end
         function menu.save_cfg(cfg_name)
             local values_copy = menu.copy(menu.values)
             for _,tab in next, values_copy do
@@ -654,7 +653,7 @@ end
                             has_extra = true
                             local extra_flag = "$"..flag
 
-                            local extra_value = {Key, Type = "Always", Active = true}
+                            local extra_value = {Key = nil, Type = "Always", Active = true}
                             key_callback = key_callback or function() end
 
                             local Keybind = library:create("TextButton", {
