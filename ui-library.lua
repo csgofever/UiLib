@@ -75,41 +75,42 @@ function library:set_draggable(gui)
     end)
 end
 
-function library.new(library_title, cfg_location)
-    local menu = {}
-    menu.values = {}
-    menu.on_load_cfg = library.signal.new("on_load_cfg")
+    function library.new(library_title, cfg_location)
+        local menu = {}
+        menu.values = {}
+        menu.on_load_cfg = library.signal.new("on_load_cfg")
 
-    if not isfolder(cfg_location) then
-        makefolder(cfg_location)
-    end
-    
-    function menu.copy(original)
-        local copy = {}
-        for k, v in pairs(original) do
-            if type(v) == "table" then
-                v = menu.copy(v)
-            end
-            copy[k] = v
+        if not isfolder(cfg_location) then
+            makefolder(cfg_location)
         end
-        return copy
+        
+        function menu.copy(original)
+            local copy = {}
+            for k, v in pairs(original) do
+                if type(v) == "table" then
+                    v = menu.copy(v)
+                end
+                copy[k] = v
+            end
+            return copy
+        end
     end
-    function menu.save_cfg(cfg_name)
-        local values_copy = menu.copy(menu.values)
-        for _,tab in next, values_copy do
-            for _,section in next, tab do
-                for _,sector in next, section do
-                    for _,element in next, sector do
-                        if not element.Color then continue end
+        function menu.save_cfg(cfg_name)
+            local values_copy = menu.copy(menu.values)
+            for _,tab in next, values_copy do
+                for _,section in next, tab do
+                    for _,sector in next, section do
+                        for _,element in next, sector do
+                            if not element.Color then continue end
 
-                        element.Color = {R = element.Color.R, G = element.Color.G, B = element.Color.B}
+                            element.Color = {R = element.Color.R, G = element.Color.G, B = element.Color.B}
+                        end
                     end
                 end
             end
-        end
 
-        writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
-    end
+            writefile(cfg_location..cfg_name..".txt", http:JSONEncode(values_copy))
+        end
     function menu.load_cfg(cfg_name)
         local new_values = http:JSONDecode(readfile(cfg_location..cfg_name..".txt"))
 
@@ -2217,3 +2218,5 @@ function library.new(library_title, cfg_location)
 
     return menu
 end
+
+return library
