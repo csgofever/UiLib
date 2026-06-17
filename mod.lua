@@ -1,10 +1,10 @@
---[[
-    ╔═══════════════════════════════════════╗
-    ║       JUGG RIVALS PREMIUM MENU        ║
-    ║         Exact UI Profile Match        ║
-    ║         File Binding: jugg.lua        ║
-    ╚═══════════════════════════════════════╝
-]]
+-- [[
+--     ╔═══════════════════════════════════════╗
+--     ║       JUGG RIVALS PREMIUM MENU        ║
+--     ║         Exact UI Profile Match        ║
+--     ║         File Binding: jugg.lua        ║
+--     ╚═══════════════════════════════════════╝
+-- ]]
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -89,6 +89,7 @@ local FeatureStates = {
     CrosshairTextStyle = "Rainbow",
     CrosshairShape = "Square",
     CrosshairColor = "#9333EA",
+    CrosshairColorToggle = false,         -- NEW: Tracks if custom color is enabled
     CrosshairColorMode = "Custom",        -- "Custom" or "Rainbow"
     CrosshairOutline = false,
     CrosshairOutlineThickness = 1,        -- outline thickness for shapes
@@ -416,7 +417,9 @@ local function updateCrosshairVisuals()
         local size   = FeatureStates.CrosshairSize or 10
         local scale  = size / 10
         local opacity = 1 - (FeatureStates.CrosshairOpacity / 100)
-        local color  = parseColor(FeatureStates.CrosshairColor)
+        
+        -- FIX: Use custom color only if toggle is checked, otherwise default to Jugg Purple
+        local color  = FeatureStates.CrosshairColorToggle and parseColor(FeatureStates.CrosshairColor) or Color3.fromRGB(147, 51, 234)
         local colorMode = FeatureStates.CrosshairColorMode or "Custom"
         local shape  = FeatureStates.CrosshairShape or "Square"
         local gap    = (FeatureStates.CrosshairGap or 0) * scale
@@ -685,7 +688,7 @@ local function updateCrosshairVisuals()
     end
 end
 
--- UPDATED: Robust Crosshair Hide Logic (persistent across respawns)
+-- Robust Crosshair Hide Logic (persistent across respawns)
 local hideCrosshairConnection = nil
 
 local function applyHideCrosshair(playerGui)
@@ -1153,7 +1156,11 @@ local function InitializeMainMenu()
         lengthSliderRow = L("Slider", "Crosshair Length", {default = {min=4,max=60,default=FeatureStates.CrosshairLength}}, function(v) FeatureStates.CrosshairLength = v.Slider updateCrosshairVisuals() end)
         L("Slider", "Crosshair Opacity", {default = {min=0,max=100,default=FeatureStates.CrosshairOpacity}}, function(v) FeatureStates.CrosshairOpacity = v.Slider updateCrosshairVisuals() end)
 
-        local colorElem = L("Toggle", "Crosshair Color (preview)")
+        -- FIX: Added default value and state handler callback for the custom color toggle
+        local colorElem = L("Toggle", "Crosshair Color (preview)", {default = {Toggle = FeatureStates.CrosshairColorToggle}}, function(v)
+            FeatureStates.CrosshairColorToggle = v.Toggle
+            updateCrosshairVisuals()
+        end)
         colorElem:add_color({Color = parseColor(FeatureStates.CrosshairColor)}, false, function(val)
             if val and val.Color then
                 FeatureStates.CrosshairColor = "#" .. val.Color:ToHex():upper()
