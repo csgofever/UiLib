@@ -283,7 +283,7 @@ local function setupAutoExecute()
                 task.wait(3)
                 pcall(function()
                     local GitRequests = loadstring(game:HttpGet('https://raw.githubusercontent.com/csgofever/Roblox-GitRequests/refs/heads/main/GitRequests.lua'))()
-                    local Repo = GitRequests.Repo("csgofever", "Modules")
+                    local Repo = GitRequests.Repo("csgofever", "UiLib")
                     loadstring(Repo:getFileContent("mod.lua"))()
                 end)
             ]])
@@ -1242,7 +1242,7 @@ local function InitializeMainMenu()
             if menu.SetOpen and menu.IsOpen then
                 menu.SetOpen(not menu.IsOpen())
             end
-        end
+        end 
     end)
     
     updateCrosshairVisuals()
