@@ -438,7 +438,7 @@ function library.new(library_title, cfg_location)
                 AnchorPoint = Vector2.new(0.5, 0),
                 Position = UDim2.new(0.5, 0, 0, 27),
                 Size = UDim2.new(0, text_width + 10, 0, 2), -- Snaps cleanly under the text
-                Visible = true, -- 2. Set back to true so you actually see the Cripware line!
+                Visible = false, -- Start hidden so lines don't stack up on top of each other!
             }, SectionButton)
 
             local SectionFrame = library:create("Frame", {
