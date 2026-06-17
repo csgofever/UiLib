@@ -1178,8 +1178,8 @@ local function InitializeMainMenu()
 
         L("Dropdown", "Color Mode", {options = {"Custom","Rainbow"}}, function(v) FeatureStates.CrosshairColorMode = v.Dropdown updateCrosshairVisuals() end)
         L("Toggle", "Crosshair Outline", {default = {Toggle = FeatureStates.CrosshairOutline}}, function(v) FeatureStates.CrosshairOutline = v.Toggle updateCrosshairVisuals() end)
-        -- Notice the max value for Outline Thickness is now 20 instead of 5
-        L("Slider", "Outline Thickness", {default = {min=1,max=20,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
+        -- Notice the max value for Outline Thickness is now 50 to allow for thicker outlines if desired
+        L("Slider", "Outline Thickness", {default = {min=1,max=50,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
 
         -- Wire up the Outline Color toggle to properly save its state
         local outlineDummy = L("Toggle", "Outline Color (preview)", {default = {Toggle = FeatureStates.CrosshairOutlineColorToggle}}, function(v) 
