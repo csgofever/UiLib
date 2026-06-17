@@ -295,6 +295,15 @@ function library.new(library_title, cfg_location)
             Text = "",
         }, TabButtons)
 
+        local ActiveLine = library:create("Frame", {
+            Name = "ActiveLine",
+            Size = UDim2.new(1, 0, 0, 2), -- Matches the exact width of the tab text
+            Position = UDim2.new(0, 0, 0, -2), -- Sits flush at the top of the text
+            BackgroundColor3 = Color3.fromRGB(147, 51, 234), -- Your Jugg Purple
+            BorderSizePixel = 0,
+            Visible = false, -- Hidden by default until clicked
+        }, TabButton) -- Make sure this matches your tab button's variable name!
+
         local TabImage = library:create("ImageLabel", {
             AnchorPoint = Vector2.new(0.5, 0.5),
             BackgroundTransparency = 1,
@@ -366,6 +375,20 @@ function library.new(library_title, cfg_location)
             if selected_tab == TabButton then return end
 
             library:tween(TabImage, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageColor3 = Color3.fromRGB(100, 100, 100)})
+        end)
+
+        TabButton.MouseButton1Click:Connect(function()
+            -- 1. The library's loop that hides other tabs
+            for _, otherTab in pairs(TabsFolder:GetChildren()) do
+                -- (Existing code that makes other tabs grey)
+                otherTab.ActiveLine.Visible = false -- ADD THIS: Hides the line on inactive tabs
+            end
+
+            -- 2. The code that highlights the tab you just clicked
+            -- (Existing code that makes this tab bright)
+            ActiveLine.Visible = true -- ADD THIS: Shows the line on your active tab
+            
+            -- (Existing code that switches the visible container)
         end)
 
         local is_first_section = true
