@@ -18,16 +18,36 @@ function library:create(Object, Properties, Parent)
     return Obj
 end
 
-local text_service = game:GetService("TextService")
-function library:get_text_size(...)
-    return text_service:GetTextSize(...)
+function library:get_text_size(text, size, font, bounds)
+    return Vector2.new(string.len(text or "") * (size * 0.6), size)
 end
 
 function library:console(func)
     func(("\n"):rep(57))
 end
 
-library.signal = loadstring(game:HttpGet("https://raw.githubusercontent.com/csgofever/UiLib/refs/heads/main/Signal.lua"))()
+local Signal = {}
+Signal.__index = Signal
+function Signal.new(name)
+    local self = setmetatable({}, Signal)
+    self.Name = name
+    self.Handlers = {}
+    return self
+end
+function Signal:Connect(func)
+    table.insert(self.Handlers, func)
+    return {
+        Disconnect = function()
+            for i, v in pairs(self.Handlers) do
+                if v == func then table.remove(self.Handlers, i) end
+            end
+        end
+    }
+end
+function Signal:Fire(...)
+    for _, v in pairs(self.Handlers) do task.spawn(v, ...) end
+end
+library.signal = Signal
 
 local local_player = game:GetService("Players").LocalPlayer
 local mouse = local_player:GetMouse()
@@ -172,6 +192,7 @@ function library.new(library_title, cfg_location)
     end
     function menu.SetOpen(State)
         ScreenGui.Enabled = State
+        menu.open = State -- This tells the script the menu is actually closed!
         game:GetService("UserInputService").MouseIconEnabled = not State
     end
 

@@ -1215,19 +1215,6 @@ local function InitializeMainMenu()
                 end
             end
         end)
-        if v == nil then return end 
-        local enteredText = type(v) == "string" and v or v.Text
-        
-        -- Ignore empty boxes or the new "..." indicator
-        if not enteredText or enteredText == "" or enteredText == "..." then return end
-
-        local success, key = pcall(function() return Enum.KeyCode[enteredText] end)
-        if success and key then
-            Settings.ToggleKey = key
-        else
-            warn("Invalid KeyCode entered in Menu Keybind: " .. tostring(enteredText))
-        end
-    end)
         main.element("Button", "Save Current Settings", nil, function() saveSettings() end)
     end
 
