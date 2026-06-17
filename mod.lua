@@ -237,7 +237,7 @@ local function runDetection()
             local isMod = false
             
             if staffUserIds[plr.UserId] then
-                print("[jugg.lua] ALERT: Server Mod late-joined! ->", plr.Name)
+                print("[jugg.lua] ALERT: Server Mod joined! ->", plr.Name)
                 isMod = true
             end
             
@@ -245,7 +245,7 @@ local function runDetection()
             if ok and pages then
                 for _, friend in ipairs(pages:GetCurrentPage()) do
                     if staffUserIds[friend.Id] then
-                        print("[jugg.lua] ALERT: Friend of Mod late-joined! ->", plr.Name)
+                        print("[jugg.lua] ALERT: Friend of Mod joined! ->", plr.Name)
                         isMod = true
                     end
                 end
@@ -1178,7 +1178,7 @@ local function InitializeMainMenu()
 
         L("Dropdown", "Color Mode", {options = {"Custom","Rainbow"}}, function(v) FeatureStates.CrosshairColorMode = v.Dropdown updateCrosshairVisuals() end)
         L("Toggle", "Crosshair Outline", {default = {Toggle = FeatureStates.CrosshairOutline}}, function(v) FeatureStates.CrosshairOutline = v.Toggle updateCrosshairVisuals() end)
-        -- Notice the max value for Outline Thickness is now 50 to allow for thicker outlines if desired
+        -- Notice the max value for Outline Thickness is now 100 instead of 20
         L("Slider", "Outline Thickness", {default = {min=1,max=100,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
 
         -- Wire up the Outline Color toggle to properly save its state
@@ -1194,7 +1194,7 @@ local function InitializeMainMenu()
             end
         end)
 
-        L("Slider", "Spin Speed (deg/s)", {default={min=0,max=100,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
+        L("Slider", "Spin Speed (deg/s)", {default={min=0,max=20,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
         L("Dropdown", "Spin Direction", {options={"None","Clockwise","Anticlockwise"}}, function(v) FeatureStates.CrosshairSpinDirection = v.Dropdown updateCrosshairVisuals() end)
 
         -- right column: text settings
@@ -1204,7 +1204,7 @@ local function InitializeMainMenu()
         R("Dropdown", "Text Style", {options={"Rainbow","UI Color","White"}}, function(v) FeatureStates.CrosshairTextStyle = v.Dropdown updateCrosshairVisuals() end)
         R("Slider", "Text Offset X", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetX}}, function(v) FeatureStates.CrosshairTextOffsetX = v.Slider updateCrosshairVisuals() end)
         R("Slider", "Text Offset Y", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetY}}, function(v) FeatureStates.CrosshairTextOffsetY = v.Slider updateCrosshairVisuals() end)
-        R("Slider", "Text Outline Thickness", {default={min=0,max=8,default=FeatureStates.CrosshairTextOutlineThickness}}, function(v) FeatureStates.CrosshairTextOutlineThickness = v.Slider updateCrosshairVisuals() end)
+        R("Slider", "Text Outline Thickness", {default={min=0,max=100,default=FeatureStates.CrosshairTextOutlineThickness}}, function(v) FeatureStates.CrosshairTextOutlineThickness = v.Slider updateCrosshairVisuals() end)
 
         menu.on_load_cfg:Connect(function() updateCrosshairVisuals() end)
         updateCrosshairVisuals()
