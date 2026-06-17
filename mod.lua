@@ -1158,10 +1158,10 @@ local function InitializeMainMenu()
         end)
         shapeElem:set_value({Dropdown = FeatureStates.CrosshairShape}, true)
 
-        L("Slider", "Crosshair Size", {default = {min=1,max=30,default=FeatureStates.CrosshairSize}}, function(v) FeatureStates.CrosshairSize = v.Slider updateCrosshairVisuals() end)
-        gapSliderRow = L("Slider", "Crosshair Gap", {default = {min=0,max=30,default=FeatureStates.CrosshairGap}}, function(v) FeatureStates.CrosshairGap = v.Slider updateCrosshairVisuals() end)
-        thicknessSliderRow = L("Slider", "Crosshair Thickness", {default = {min=1,max=10,default=FeatureStates.CrosshairThickness}}, function(v) FeatureStates.CrosshairThickness = v.Slider updateCrosshairVisuals() end)
-        lengthSliderRow = L("Slider", "Crosshair Length", {default = {min=4,max=60,default=FeatureStates.CrosshairLength}}, function(v) FeatureStates.CrosshairLength = v.Slider updateCrosshairVisuals() end)
+        L("Slider", "Crosshair Size", {default = {min=1,max=100,default=FeatureStates.CrosshairSize}}, function(v) FeatureStates.CrosshairSize = v.Slider updateCrosshairVisuals() end)
+        gapSliderRow = L("Slider", "Crosshair Gap", {default = {min=0,max=100,default=FeatureStates.CrosshairGap}}, function(v) FeatureStates.CrosshairGap = v.Slider updateCrosshairVisuals() end)
+        thicknessSliderRow = L("Slider", "Crosshair Thickness", {default = {min=1,max=100,default=FeatureStates.CrosshairThickness}}, function(v) FeatureStates.CrosshairThickness = v.Slider updateCrosshairVisuals() end)
+        lengthSliderRow = L("Slider", "Crosshair Length", {default = {min=4,max=100,default=FeatureStates.CrosshairLength}}, function(v) FeatureStates.CrosshairLength = v.Slider updateCrosshairVisuals() end)
         L("Slider", "Crosshair Opacity", {default = {min=0,max=100,default=FeatureStates.CrosshairOpacity}}, function(v) FeatureStates.CrosshairOpacity = v.Slider updateCrosshairVisuals() end)
 
         -- FIX: Added default value and state handler callback for the custom color toggle
@@ -1194,13 +1194,13 @@ local function InitializeMainMenu()
             end
         end)
 
-        L("Slider", "Spin Speed (deg/s)", {default={min=0,max=20,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
+        L("Slider", "Spin Speed (deg/s)", {default={min=0,max=100,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
         L("Dropdown", "Spin Direction", {options={"None","Clockwise","Anticlockwise"}}, function(v) FeatureStates.CrosshairSpinDirection = v.Dropdown updateCrosshairVisuals() end)
 
         -- right column: text settings
         R("Toggle", "Show Crosshair Text", {default={Toggle=FeatureStates.CrosshairText}}, function(v) FeatureStates.CrosshairText = v.Toggle updateCrosshairVisuals() end)
         R("TextBox", "Custom Text", {default = FeatureStates.CrosshairCustomText}, function(v) FeatureStates.CrosshairCustomText = v.Text updateCrosshairVisuals() end)
-        R("Slider", "Text Size", {default={min=8,max=24,default=FeatureStates.CrosshairTextSize}}, function(v) FeatureStates.CrosshairTextSize = v.Slider updateCrosshairVisuals() end)
+        R("Slider", "Text Size", {default={min=8,max=100,default=FeatureStates.CrosshairTextSize}}, function(v) FeatureStates.CrosshairTextSize = v.Slider updateCrosshairVisuals() end)
         R("Dropdown", "Text Style", {options={"Rainbow","UI Color","White"}}, function(v) FeatureStates.CrosshairTextStyle = v.Dropdown updateCrosshairVisuals() end)
         R("Slider", "Text Offset X", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetX}}, function(v) FeatureStates.CrosshairTextOffsetX = v.Slider updateCrosshairVisuals() end)
         R("Slider", "Text Offset Y", {default={min=-100,max=100,default=FeatureStates.CrosshairTextOffsetY}}, function(v) FeatureStates.CrosshairTextOffsetY = v.Slider updateCrosshairVisuals() end)
