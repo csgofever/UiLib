@@ -1,3 +1,4 @@
+search "ok its updated, but its not like the original cripware where it goes over the section you're in only" - added code but it doesn't do anything
 fix save config/config in general (i think causes the hang at start, when turn off watermark on load it hangs)
-fix gui keybind
-fix colorpicker not working
+fix colorpicker not working (it like goes past its own section so it gets cutoff)
+fix text outline, when saved config and try to reload it gives attempt to call a nil value error
