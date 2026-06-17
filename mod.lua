@@ -89,12 +89,13 @@ local FeatureStates = {
     CrosshairTextStyle = "Rainbow",
     CrosshairShape = "Square",
     CrosshairColor = "#9333EA",
-    CrosshairColorToggle = false,         -- NEW: Tracks if custom color is enabled
-    CrosshairColorMode = "Custom",        -- "Custom" or "Rainbow"
+    CrosshairColorToggle = false,         
+    CrosshairColorMode = "Custom",        
     CrosshairOutline = false,
-    CrosshairOutlineThickness = 1,        -- outline thickness for shapes
+    CrosshairOutlineThickness = 1,        
     CrosshairOutlineColor = "#000000",
-    CrosshairTextOutlineThickness = 1,    -- outline thickness for text specifically
+    CrosshairOutlineColorToggle = false,  -- ADD THIS LINE to track the outline toggle
+    CrosshairTextOutlineThickness = 1,
     CrosshairGap = 0,
     CrosshairThickness = 2,
     CrosshairLength = 15,
@@ -434,7 +435,14 @@ local function updateCrosshairVisuals()
                 else
                     stroke.Thickness = FeatureStates.CrosshairOutlineThickness or 1
                 end
-                stroke.Color = parseColor(FeatureStates.CrosshairOutlineColor)
+                
+                -- Check if custom outline color is enabled, otherwise default to black
+                if FeatureStates.CrosshairOutlineColorToggle then
+                    stroke.Color = parseColor(FeatureStates.CrosshairOutlineColor)
+                else
+                    stroke.Color = Color3.fromRGB(0, 0, 0) -- Default to Black
+                end
+
                 if instance:IsA("TextLabel") then
                     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
                 else
@@ -1170,11 +1178,20 @@ local function InitializeMainMenu()
 
         L("Dropdown", "Color Mode", {options = {"Custom","Rainbow"}}, function(v) FeatureStates.CrosshairColorMode = v.Dropdown updateCrosshairVisuals() end)
         L("Toggle", "Crosshair Outline", {default = {Toggle = FeatureStates.CrosshairOutline}}, function(v) FeatureStates.CrosshairOutline = v.Toggle updateCrosshairVisuals() end)
-        L("Slider", "Outline Thickness (Shapes)", {default = {min=1,max=5,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
+        -- Notice the max value for Outline Thickness is now 20 instead of 5
+        L("Slider", "Outline Thickness", {default = {min=1,max=20,default=FeatureStates.CrosshairOutlineThickness}}, function(v) FeatureStates.CrosshairOutlineThickness = v.Slider updateCrosshairVisuals() end)
 
-        local outlineDummy = L("Toggle", "Outline Color (preview)")
+        -- Wire up the Outline Color toggle to properly save its state
+        local outlineDummy = L("Toggle", "Outline Color (preview)", {default = {Toggle = FeatureStates.CrosshairOutlineColorToggle}}, function(v) 
+            FeatureStates.CrosshairOutlineColorToggle = v.Toggle
+            updateCrosshairVisuals() 
+        end)
+        
         outlineDummy:add_color({Color = parseColor(FeatureStates.CrosshairOutlineColor) or Settings.UIColor}, false, function(val)
-            if val and val.Color then FeatureStates.CrosshairOutlineColor = "#" .. val.Color:ToHex():upper() updateCrosshairVisuals() end
+            if val and val.Color then 
+                FeatureStates.CrosshairOutlineColor = "#" .. val.Color:ToHex():upper() 
+                updateCrosshairVisuals() 
+            end
         end)
 
         L("Slider", "Spin Speed (deg/s)", {default={min=0,max=20,default=FeatureStates.CrosshairSpinSpeed}}, function(v) FeatureStates.CrosshairSpinSpeed = v.Slider updateCrosshairVisuals() end)
