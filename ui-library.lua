@@ -709,7 +709,8 @@ function library.new(library_title, cfg_location)
                                 Name = "KeybindFrame",
                                 BackgroundColor3 = Color3.fromRGB(10, 10, 10),
                                 BorderColor3 = Color3.fromRGB(30, 30, 30),
-                                Position = UDim2.new(1, 5, 0, 3),
+                                AnchorPoint = Vector2.new(1, 0), -- Anchors the top-right corner
+                                Position = UDim2.new(0, -5, 0, 3), -- Spawns to the LEFT of the button
                                 Size = UDim2.new(0, 55, 0, 75),
                                 Visible = false,
                                 ZIndex = 2,
@@ -932,7 +933,8 @@ function library.new(library_title, cfg_location)
                                 Parent = ColorButton,
                                 BackgroundColor3 = Color3.fromRGB(10, 10, 10),
                                 BorderColor3 = Color3.fromRGB(0, 0, 0),
-                                Position = UDim2.new(1, 5, 0, 0),
+                                AnchorPoint = Vector2.new(1, 0), -- Anchors the top-right corner
+                                Position = UDim2.new(0, -5, 0, 0), -- Spawns to the LEFT of the button
                                 Size = UDim2.new(0, 200, 0, 170),
                                 Visible = false,
                                 ZIndex = 2,
